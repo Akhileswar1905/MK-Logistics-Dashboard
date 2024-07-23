@@ -13,13 +13,25 @@ const ContractsPage = ({ searchParams }) => {
 
   const [contracts, setContracts] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getContracts = async () => {
-      const id = localStorage.getItem("id");
-      const res = await fetchCP(id);
-      setContracts(res.contracts);
-      setSearchResults(res.contracts);
+      try {
+        const id =
+          typeof window !== "undefined" ? localStorage.getItem("id") : null;
+        if (!id) {
+          throw new Error("User ID not found in local storage.");
+        }
+        const res = await fetchCP(id);
+        setContracts(res.contracts);
+        setSearchResults(res.contracts);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
     getContracts();
   }, []);
@@ -34,12 +46,20 @@ const ContractsPage = ({ searchParams }) => {
     handleSearch();
   }, [q, contracts]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="m-2 p-3 bg-[#182237] rounded-xl">
       <div className="flex items-center justify-between">
         <Search placeholder="Search Contracts..." />
-        <Link href={"/contracts/create-contract"}>
-          <button className="bg-[#5d57c9] text-white px-2 py-1 rounded-lg  flex items-center justify-center gap-2">
+        <Link href="/contracts/create-contract">
+          <button className="bg-[#5d57c9] text-white px-2 py-1 rounded-lg flex items-center justify-center gap-2">
             <FaPlus />
             Add New
           </button>
@@ -52,15 +72,16 @@ const ContractsPage = ({ searchParams }) => {
               <td className="p-3">Company Name</td>
               <td className="p-3">Contract Id</td>
               <td className="p-3">Duration</td>
+              <td className="p-3">Actions</td>
             </tr>
           </thead>
           <tbody>
-            {searchResults?.map((contract) => (
+            {searchResults.map((contract) => (
               <tr key={contract.companyId}>
                 <td className="flex items-center gap-2 p-3">
                   <Image
-                    src={"/images/noavatar.png"}
-                    alt=""
+                    src="/images/noavatar.png"
+                    alt="Company Logo"
                     width={30}
                     height={30}
                     className="rounded-full"
@@ -69,9 +90,9 @@ const ContractsPage = ({ searchParams }) => {
                 </td>
                 <td className="p-3">{contract.companyId}</td>
                 <td className="p-3">{contract.duration}</td>
-                <td>
+                <td className="p-3">
                   <div className="flex items-center gap-4">
-                    <button className="p-1 bg-[#f7373775] rounded-lg ">
+                    <button className="p-1 bg-[#f7373775] rounded-lg">
                       Delete
                     </button>
                   </div>

@@ -4,13 +4,20 @@ import React, { useEffect, useState } from "react";
 import { login } from "../lib/utils";
 
 const LoginPage = () => {
-  const id = typeof window !== "undefined" ? localStorage.getItem("id") : null;
   const router = useRouter();
   const [form, setForm] = useState({
     username: "",
     password: "",
   });
   const [error, setError] = useState(false);
+  const [id, setId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedId = localStorage.getItem("id");
+      setId(storedId);
+    }
+  }, []);
 
   useEffect(() => {
     if (id) {

@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "../../../public/images/logo.png";
 import Link from "next/link";
@@ -10,7 +11,14 @@ import cp from "./cp";
 const Sidebar = () => {
   const path = usePathname();
   const router = useRouter();
-  const isAdmin = localStorage.getItem("isAdmin");
+  const [isAdmin, setIsAdmin] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const adminStatus = localStorage.getItem("isAdmin");
+      setIsAdmin(adminStatus);
+    }
+  }, []);
 
   const links = isAdmin === "true" ? admin : cp;
 
@@ -37,8 +45,10 @@ const Sidebar = () => {
           <button
             className="w-full  flex items-center justify-start gap-4 p-2 rounded-lg text-white hover:bg-[#898c94]"
             onClick={() => {
-              localStorage.clear();
-              router.push("/login");
+              if (typeof window !== "undefined") {
+                localStorage.clear();
+                router.push("/login");
+              }
             }}
           >
             <IoIosLogOut color="white" size={18} />
