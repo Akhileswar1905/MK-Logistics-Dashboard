@@ -113,3 +113,10 @@ export const rejectReq = async (id) => {
   console.log(res.data);
   return res.data;
 };
+
+export const acceptUpdateReq = async (body) => {
+  let url = `https://polygon-project.onrender.com/cp/accept-update-request/`;
+  const res = await axios.post(url, body);
+  console.log(res.data);
+  return res.data;
+};

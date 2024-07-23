@@ -2,6 +2,7 @@ const { FaCar, FaRegMoneyBillAlt } = require("react-icons/fa");
 const { IoIosNotifications } = require("react-icons/io");
 const { LiaFileContractSolid } = require("react-icons/lia");
 const { MdDashboard } = require("react-icons/md");
+const { CiEdit } = require("react-icons/ci");
 
 const cp = [
   {
@@ -37,6 +38,12 @@ const cp = [
     title: "Requests",
     icon: <IoIosNotifications color="white" size={20} />,
     path: "/requests",
+  },
+  {
+    id: 6,
+    title: "Update Requests",
+    icon: <CiEdit color="white" size={20} />,
+    path: "/updates",
   },
 ];
 
