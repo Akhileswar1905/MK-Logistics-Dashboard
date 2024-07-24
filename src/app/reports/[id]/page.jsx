@@ -45,7 +45,8 @@ const ReportPage = () => {
         status: "pending",
       };
       const res = await sendReq(details);
-      if (res.status === 200) {
+      console.log(res);
+      if (res) {
         router.back();
       } else {
         setError("Failed to send payment request.");
