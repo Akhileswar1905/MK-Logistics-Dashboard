@@ -15,11 +15,13 @@ const CreateContract = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const id = localStorage.getItem("id");
-    if (!id) {
-      router.push("/login");
-    } else {
-      setForm((prevForm) => ({ ...prevForm, id }));
+    if (typeof window !== "undefined") {
+      const id = localStorage.getItem("id");
+      if (!id) {
+        router.push("/login");
+      } else {
+        setForm((prevForm) => ({ ...prevForm, id }));
+      }
     }
   }, [router]);
 

@@ -17,12 +17,14 @@ const AssignContract = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const storedDriver = localStorage.getItem("driver");
-    if (!storedDriver) {
-      router.push("/login");
-    } else {
-      setDriver(storedDriver);
-      setForm((prevForm) => ({ ...prevForm, driverId: storedDriver }));
+    if (typeof window !== "undefined") {
+      const storedDriver = localStorage.getItem("driver");
+      if (!storedDriver) {
+        router.push("/login");
+      } else {
+        setDriver(storedDriver);
+        setForm((prevForm) => ({ ...prevForm, driverId: storedDriver }));
+      }
     }
   }, [router]);
 
