@@ -1,18 +1,27 @@
 "use client";
-import { createcontract } from "@/app/lib/utils";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { v4 } from "uuid";
+import { createcontract } from "@/app/lib/utils";
+
 const CreateContract = () => {
-  const [error, setError] = useState(false);
-  const id = localStorage.getItem("id");
   const [form, setForm] = useState({
     companyName: "",
     duration: "",
     companyId: v4(),
-    id: id,
+    id: "",
   });
+  const [error, setError] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const id = localStorage.getItem("id");
+    if (!id) {
+      router.push("/login");
+    } else {
+      setForm((prevForm) => ({ ...prevForm, id }));
+    }
+  }, [router]);
 
   const handleClick = async () => {
     const res = await createcontract(form);
@@ -58,7 +67,7 @@ const CreateContract = () => {
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
-              onClick={() => handleClick()}
+              onClick={handleClick}
             >
               Create
             </button>

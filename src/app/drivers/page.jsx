@@ -10,12 +10,15 @@ const DriversPage = ({ searchParams }) => {
   const q = searchParams?.q?.toLowerCase() || "";
   const [searchResults, setSearchResults] = useState([]);
   const [users, setUsers] = useState([]);
+
   useEffect(() => {
     const getUsers = async () => {
       const id = localStorage.getItem("id");
-      const res = await fetchCP(id);
-      setUsers(res.drivers);
-      setSearchResults(res.drivers);
+      if (id) {
+        const res = await fetchCP(id);
+        setUsers(res.drivers);
+        setSearchResults(res.drivers);
+      }
     };
     getUsers();
   }, []);
@@ -39,9 +42,11 @@ const DriversPage = ({ searchParams }) => {
         <table className="w-full">
           <thead>
             <tr>
-              <td className="p-3ha">Driver</td>
+              <td className="p-3">Driver</td>
               <td className="p-3">Driver Id</td>
               <td className="p-3">Phone Number</td>
+              <td className="p-3">Vehicle Number</td>
+              <td className="p-3">Actions</td>
             </tr>
           </thead>
           <tbody>

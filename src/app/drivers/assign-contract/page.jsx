@@ -1,20 +1,31 @@
 "use client";
-import { assignContract, createcp } from "@/app/lib/utils";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { assignContract } from "@/app/lib/utils";
 
 const AssignContract = () => {
   const [error, setError] = useState(false);
-  const driver = localStorage.getItem("driver");
+  const [driver, setDriver] = useState("");
   const [form, setForm] = useState({
     companyName: "",
     companyId: "",
     duration: "",
     payPerRide: "",
-    driverId: driver,
+    driverId: "",
   });
 
   const router = useRouter();
+
+  useEffect(() => {
+    const driver = localStorage.getItem("driver");
+    if (!driver) {
+      router.push("/login");
+    } else {
+      setDriver(driver);
+      setForm((prevForm) => ({ ...prevForm, driverId: driver }));
+    }
+  }, [router]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
@@ -38,14 +49,23 @@ const AssignContract = () => {
       return;
     }
     setError(false);
-    setForm({ companyName: "", companyId: "", duration: "", payPerRide: "" });
+    setForm({
+      companyName: "",
+      companyId: "",
+      duration: "",
+      payPerRide: "",
+      driverId: driver,
+    });
     router.push("/drivers/");
   };
 
   return (
     <div className="flex items-center justify-center h-full">
       <div className="w-full max-w-xs">
-        <form className="bg-[#182237] shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form
+          className="bg-[#182237] shadow-md rounded px-8 pt-6 pb-8 mb-4"
+          onSubmit={handleSubmit}
+        >
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -55,10 +75,11 @@ const AssignContract = () => {
             </label>
             <input
               onChange={handleChange}
-              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline "
+              value={form.companyName}
+              className="bg-[#2e3748] shadow appearance-none rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
               id="companyName"
               type="text"
-              placeholder="companyName"
+              placeholder="Company Name"
             />
           </div>
           <div className="mb-4">
@@ -70,7 +91,8 @@ const AssignContract = () => {
             </label>
             <input
               onChange={handleChange}
-              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline "
+              value={form.companyId}
+              className="bg-[#2e3748] shadow appearance-none rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
               id="companyId"
               type="text"
               placeholder="Company Id"
@@ -85,9 +107,10 @@ const AssignContract = () => {
             </label>
             <input
               onChange={handleChange}
-              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
+              value={form.duration}
+              className="bg-[#2e3748] shadow appearance-none rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
               id="duration"
-              type="duration"
+              type="text"
               placeholder="Duration"
             />
           </div>
@@ -100,18 +123,24 @@ const AssignContract = () => {
             </label>
             <input
               onChange={handleChange}
-              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-white mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              value={form.payPerRide}
+              className="bg-[#2e3748] shadow appearance-none rounded w-full py-2 px-3 text-white mb-3 leading-tight focus:outline-none focus:shadow-outline"
               id="payPerRide"
               type="number"
               placeholder="Amount"
             />
           </div>
 
+          {error && (
+            <p className="text-red-500 text-xs italic">
+              Please fill out all fields.
+            </p>
+          )}
+
           <div className="flex items-center justify-between">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
             >
               Assign
             </button>
