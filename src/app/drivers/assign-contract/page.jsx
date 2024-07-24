@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { assignContract } from "@/app/lib/utils";
 
 const AssignContract = () => {
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [driver, setDriver] = useState("");
   const [form, setForm] = useState({
     companyName: "",
@@ -17,12 +17,12 @@ const AssignContract = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const driver = localStorage.getItem("driver");
-    if (!driver) {
+    const storedDriver = localStorage.getItem("driver");
+    if (!storedDriver) {
       router.push("/login");
     } else {
-      setDriver(driver);
-      setForm((prevForm) => ({ ...prevForm, driverId: driver }));
+      setDriver(storedDriver);
+      setForm((prevForm) => ({ ...prevForm, driverId: storedDriver }));
     }
   }, [router]);
 
@@ -39,24 +39,28 @@ const AssignContract = () => {
       form.duration === "" ||
       form.payPerRide === ""
     ) {
-      setError(true);
+      setError("Please fill out all fields.");
       return;
     }
-    setError(false);
-    const res = await assignContract(form);
-    if (res.error) {
-      setError(true);
-      return;
+    setError("");
+    try {
+      const res = await assignContract(form);
+      if (res.error) {
+        setError("Error assigning contract.");
+        return;
+      }
+      setError("");
+      setForm({
+        companyName: "",
+        companyId: "",
+        duration: "",
+        payPerRide: "",
+        driverId: driver,
+      });
+      router.push("/drivers/");
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
     }
-    setError(false);
-    setForm({
-      companyName: "",
-      companyId: "",
-      duration: "",
-      payPerRide: "",
-      driverId: driver,
-    });
-    router.push("/drivers/");
   };
 
   return (
@@ -131,11 +135,7 @@ const AssignContract = () => {
             />
           </div>
 
-          {error && (
-            <p className="text-red-500 text-xs italic">
-              Please fill out all fields.
-            </p>
-          )}
+          {error && <p className="text-red-500 text-xs italic">{error}</p>}
 
           <div className="flex items-center justify-between">
             <button

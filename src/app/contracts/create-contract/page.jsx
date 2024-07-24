@@ -11,7 +11,7 @@ const CreateContract = () => {
     companyId: v4(),
     id: "",
   });
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -23,9 +23,27 @@ const CreateContract = () => {
     }
   }, [router]);
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
   const handleClick = async () => {
-    const res = await createcontract(form);
-    router.push("/contracts");
+    if (form.companyName === "" || form.duration === "") {
+      setError("Please fill out all fields.");
+      return;
+    }
+
+    setError("");
+    try {
+      const res = await createcontract(form);
+      if (res.error) {
+        setError("Error creating contract.");
+        return;
+      }
+      router.push("/contracts");
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -40,12 +58,12 @@ const CreateContract = () => {
               Company Name
             </label>
             <input
-              onChange={(e) =>
-                setForm({ ...form, companyName: e.target.value })
-              }
-              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline "
+              onChange={handleChange}
+              value={form.companyName}
+              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
               id="companyName"
               type="text"
+              placeholder="Company Name"
             />
           </div>
           <div className="mb-4">
@@ -56,12 +74,16 @@ const CreateContract = () => {
               Duration
             </label>
             <input
-              onChange={(e) => setForm({ ...form, duration: e.target.value })}
-              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline "
+              onChange={handleChange}
+              value={form.duration}
+              className="bg-[#2e3748] shadow appearance-none  rounded w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
               id="duration"
               type="text"
+              placeholder="Duration"
             />
           </div>
+
+          {error && <p className="text-red-500 text-xs italic">{error}</p>}
 
           <div className="flex items-center justify-between">
             <button

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { FaPlus } from "react-icons/fa";
 import Pagination from "@/components/Pagination/Pagination";
@@ -15,10 +15,15 @@ const Reports = () => {
     const getUsers = async () => {
       const id = localStorage.getItem("id");
       if (id) {
-        const res = await fetchCP(id);
-        setUser(res);
-        setReports(res?.reports || []);
-        setCurrentReports(res?.reports || []);
+        try {
+          const res = await fetchCP(id);
+          setUser(res);
+          setReports(res?.reports || []);
+          setCurrentReports(res?.reports || []);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          // Handle the error appropriately (e.g., show a message to the user)
+        }
       } else {
         // Handle the case where id is not found in localStorage
         // For example, redirect to login
@@ -31,20 +36,30 @@ const Reports = () => {
   const generateRep = async () => {
     const id = localStorage.getItem("id");
     if (id) {
-      const res = await generateReport(id);
-      console.log(res);
-      setReports([...reports, res]);
-      setCurrentReports([...currentReports, res]);
+      try {
+        const res = await generateReport(id);
+        console.log(res);
+        setReports([...reports, res]);
+        setCurrentReports([...currentReports, res]);
+      } catch (error) {
+        console.error("Error generating report:", error);
+        // Handle the error appropriately
+      }
     }
   };
 
   const handleDelete = async (reportId) => {
     const id = localStorage.getItem("id");
     if (id) {
-      const res = await deleteReport(id, reportId);
-      console.log(res.reports);
-      setReports(res.reports ? res.reports : []);
-      setCurrentReports(res.reports ? res.reports : []);
+      try {
+        const res = await deleteReport(id, reportId);
+        console.log(res.reports);
+        setReports(res.reports ? res.reports : []);
+        setCurrentReports(res.reports ? res.reports : []);
+      } catch (error) {
+        console.error("Error deleting report:", error);
+        // Handle the error appropriately
+      }
     }
   };
 
@@ -98,4 +113,10 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+const ReportsWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Reports />
+  </Suspense>
+);
+
+export default ReportsWithSuspense;

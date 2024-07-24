@@ -3,12 +3,13 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { FaPlus } from "react-icons/fa";
 import { acceptReq, fetchAdmin, rejectReq } from "../lib/utils";
 
 const PayReqPage = () => {
   const [requests, setRequests] = useState(null);
+
   useEffect(() => {
     const getUser = async () => {
       const admin = await fetchAdmin();
@@ -25,6 +26,7 @@ const PayReqPage = () => {
       setRequests(newReqs);
     }
   };
+
   const handleReject = async (id) => {
     const res = await rejectReq(id);
     if (res.status === 200) {
@@ -62,7 +64,7 @@ const PayReqPage = () => {
                       Approve
                     </button>
                     <button
-                      className="p-1 bg-[#f7373775] rounded-lg "
+                      className="p-1 bg-[#f7373775] rounded-lg"
                       onClick={() => handleReject(req.reportId)}
                     >
                       Reject
@@ -79,4 +81,10 @@ const PayReqPage = () => {
   );
 };
 
-export default PayReqPage;
+const PayReqPageWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <PayReqPage />
+  </Suspense>
+);
+
+export default PayReqPageWithSuspense;
