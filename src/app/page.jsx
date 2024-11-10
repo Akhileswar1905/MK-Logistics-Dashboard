@@ -8,9 +8,11 @@ import { FaCar, FaFileContract } from "react-icons/fa";
 import { IoMdContract } from "react-icons/io";
 
 export default function Home() {
-  const id = localStorage.getItem("id");
-  if (!id) {
-    redirect("/login");
+  if (typeof localStorage !== "undefined") {
+    const id = localStorage.getItem("id");
+    if (!id) {
+      redirect("/login");
+    }
   }
 
   return (
