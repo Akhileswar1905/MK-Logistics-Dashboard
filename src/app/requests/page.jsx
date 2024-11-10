@@ -17,7 +17,8 @@ const RequestsPage = () => {
     };
     getCP();
   }, []);
-  console.log(requests);
+
+  console.log(requests[0]);
 
   return (
     <div className="m-2 p-3 bg-[#182237] rounded-xl">
@@ -35,7 +36,7 @@ const RequestsPage = () => {
               <tr key={request._id}>
                 <td className="flex items-center gap-2">
                   <Image
-                    src={"/images/noavatar.png"}
+                    src={request?.photo || "/images/noavatar.png"}
                     alt=""
                     width={30}
                     height={30}

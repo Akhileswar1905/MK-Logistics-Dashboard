@@ -40,8 +40,14 @@ const Request = () => {
 
   return (
     <div className="flex m-2 gap-5">
-      <div className="w-[26%] p-3 bg-[#182237] rounded-lg h-72">
-        <Image src={"/images/noavatar.png"} alt="" width={300} height={300} />
+      <div className="w-[26%] p-3 bg-[#182237] rounded-lg h-80">
+        <Image
+          src={user?.photo || "/images/noavatar.png"}
+          alt=""
+          width={300}
+          height={300}
+          className="rounded-full"
+        />
         <p className="mt-4 text-center">{user?._id}</p>
       </div>
       <div className="w-full  bg-[#182237] rounded-lg">

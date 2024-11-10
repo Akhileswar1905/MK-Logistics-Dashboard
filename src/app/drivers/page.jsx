@@ -49,7 +49,7 @@ const DriversPage = ({ searchParams }) => {
               <tr key={user?._id}>
                 <td className="flex items-center gap-2 p-3">
                   <Image
-                    src={"/images/noavatar.png"}
+                    src={user?.photo || "/images/noavatar.png"}
                     alt=""
                     width={30}
                     height={30}
