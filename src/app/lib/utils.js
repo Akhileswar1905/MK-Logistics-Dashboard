@@ -1,8 +1,8 @@
 "use client";
 import axios from "axios";
 
-// const base_url = 'https://polygon-project.onrender.com/'
-const base_url = "http://localhost:5050/";
+const base_url = "https://polygon-project.onrender.com/";
+// const base_url = "http://localhost:5050/";
 
 export const fetchDrivers = async () => {
   const id = localStorage.getItem("id");
