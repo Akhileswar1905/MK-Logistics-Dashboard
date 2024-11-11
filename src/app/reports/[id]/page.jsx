@@ -7,6 +7,7 @@ const ReportPage = () => {
   const pathName = usePathname();
   const reportId = pathName.split("/").pop();
   const [report, setReport] = useState(null);
+  const [msg, setMsg] = useState(false);
   const router = useRouter();
   useEffect(() => {
     const getReport = async () => {
@@ -28,7 +29,7 @@ const ReportPage = () => {
       status: "pending",
     };
     const res = await sendReq(details);
-    if (res.status === 200) router.back();
+    setMsg(true);
   };
 
   return (
@@ -69,6 +70,11 @@ const ReportPage = () => {
         >
           Send Payment Request
         </button>
+        {msg && (
+          <p className="text-base  text-[#d3d3d3] mt-4 mb-4">
+            Request Sent Successfully
+          </p>
+        )}
       </table>
     </div>
   );

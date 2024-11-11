@@ -10,7 +10,7 @@ export default function ClientLayout({ children }) {
   return (
     <div className="flex flex-row h-[100vh] relative">
       {showSidebarAndNavbar && (
-        <div className="flex bg-[#182237] sticky top-3">
+        <div className="flex bg-[#182237] relative">
           <Sidebar />
         </div>
       )}

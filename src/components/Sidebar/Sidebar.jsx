@@ -23,7 +23,7 @@ const Sidebar = () => {
   const links = isAdmin === "true" ? admin : cp;
 
   return (
-    <div className="sticky top-10">
+    <div className="sticky top-0">
       <div>
         <Image src={logo} alt="logo" width={430 * 0.6} />
       </div>

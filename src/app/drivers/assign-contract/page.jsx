@@ -1,18 +1,30 @@
 "use client";
 import { assignContract, createcp } from "@/app/lib/utils";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AssignContract = () => {
   const [error, setError] = useState(false);
-  const driver = localStorage.getItem("driver");
+  const [driver, setDriver] = useState("");
+  const [id, setId] = useState("");
+
   const [form, setForm] = useState({
     companyName: "",
     companyId: "",
     duration: "",
     payPerRide: "",
-    driverId: driver,
+    driverId: "",
   });
+  useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      let x = localStorage.getItem("driver");
+      setId(x);
+      setForm((prevForm) => ({
+        ...prevForm,
+        driverId: x,
+      }));
+    }
+  }, []);
 
   const router = useRouter();
   const handleChange = (e) => {

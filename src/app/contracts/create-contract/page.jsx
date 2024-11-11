@@ -1,17 +1,28 @@
 "use client";
 import { createcontract } from "@/app/lib/utils";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 const CreateContract = () => {
   const [error, setError] = useState(false);
-  const id = localStorage.getItem("id");
+  const [id, setId] = useState("");
   const [form, setForm] = useState({
     companyName: "",
     duration: "",
     companyId: v4(),
-    id: id,
+    id: "",
   });
+
+  useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      const storedId = localStorage.getItem("id") || "";
+      setId(storedId);
+      setForm((prevForm) => ({
+        ...prevForm,
+        id: storedId,
+      }));
+    }
+  }, []);
   const router = useRouter();
 
   const handleClick = async () => {

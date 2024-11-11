@@ -38,7 +38,7 @@ const Transactions = () => {
                   {report.status}
                 </span>
               </td>
-              <td>{report.date}</td>
+              <td>{report.reportDate}</td>
               <td>₹{report.amount}</td>
             </tr>
           ))}
