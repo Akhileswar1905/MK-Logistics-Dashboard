@@ -42,8 +42,8 @@ export default function Home() {
   return (
     <div>
       {/* Conditionally render the Navbar and Sidebar based on loading state */}
-      {!loading && <Navbar />} {/* Only render Navbar when not loading */}
-      {!loading && <Sidebar />} {/* Only render Sidebar when not loading */}
+      {/* {!loading && <Navbar />} 
+      {!loading && <Sidebar />}  */}
       <div className="m-3 gap-4">
         <div className="flex gap-5 justify-around">
           <Card
