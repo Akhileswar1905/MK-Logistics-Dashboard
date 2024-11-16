@@ -1,7 +1,12 @@
 import React from "react";
+import Table from "./Table/Table";
 
 const UpdateRequests = () => {
-  return <div>UpdateRequests</div>;
+  return (
+    <div className="p-8">
+      <Table />
+    </div>
+  );
 };
 
 export default UpdateRequests;

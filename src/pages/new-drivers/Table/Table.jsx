@@ -6,7 +6,6 @@ const Table = () => {
   const data = Array.from({ length: 100 }, (_, i) => ({
     driverName: `Driver ${i + 1}`,
     vehicleNumber: `Vehicle ${i + 1}`,
-    trips: Math.floor(Math.random() * 100),
     phoneNumber: `${Math.floor(Math.random() * 10000000000)}`,
     date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -45,7 +44,7 @@ const Table = () => {
   return (
     <div className=" border-2 px-8 py-6 rounded-lg">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-3xl text-[var(--grayish)]">Drivers</h2>
+        <h2 className="text-3xl text-[var(--grayish)]">Joining Requests</h2>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <input
@@ -118,7 +117,6 @@ const Table = () => {
           <tr className="font-light">
             <th className="py-3 font-normal ">Driver Name</th>
             <th className="py-3 font-normal">Vehicle Number</th>
-            <th className="py-3 font-normal">Number of Trips</th>
             <th className="py-3 font-normal">Phone Number</th>
             <th className="py-3 font-normal">Date of Joining</th>
           </tr>
@@ -127,11 +125,18 @@ const Table = () => {
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
               <tr key={index} className="cursor-pointer  gap-1">
-                <td className="py-4 ">{row.driverName}</td>
-                <td className="py-4">{row.vehicleNumber}</td>
-                <td className="py-4">{row.trips}</td>
-                <td className="py-4">{row.phoneNumber}</td>
-                <td className="py-4">{row.date}</td>
+                <td className="py-2 ">{row.driverName}</td>
+                <td className="py-2">{row.vehicleNumber}</td>
+                <td className="py-2">{row.phoneNumber}</td>
+                <td className="py-2">{row.date}</td>
+                <td className="py-2 flex gap-6">
+                  <button className="text-[var(--primary-green)] border-2 p-2 rounded-md">
+                    Accept
+                  </button>
+                  <button className="text-[red] border-2 p-2 rounded-md">
+                    Reject
+                  </button>
+                </td>
               </tr>
             ))
           ) : (

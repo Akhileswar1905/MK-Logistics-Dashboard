@@ -5,9 +5,9 @@ import { links } from "./data/Links";
 const Sidebar = () => {
   return (
     <div className="flex flex-[0.17] border-r-[0.5px]  flex-col gap-5 px-2 py-7   h-screen sticky top-0">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-5">
         <img src="/company/logo.webp" alt="Logo" width={50} height={50} />
-        <h1 className="text-lg">M&K Logistics</h1>
+        <h1 className="text-2xl">M&K Logistics</h1>
       </div>
       <div>
         <ul className="flex flex-col gap-3 my-10">

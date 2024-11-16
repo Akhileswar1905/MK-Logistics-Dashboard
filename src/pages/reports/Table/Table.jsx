@@ -4,17 +4,17 @@ import { BiFilterAlt } from "react-icons/bi";
 
 const Table = () => {
   const data = Array.from({ length: 100 }, (_, i) => ({
-    driverName: `Driver ${i + 1}`,
+    transactionId: `Transaction ${i + 1}`,
     vehicleNumber: `Vehicle ${i + 1}`,
-    trips: Math.floor(Math.random() * 100),
     phoneNumber: `${Math.floor(Math.random() * 10000000000)}`,
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Store date as Date object
+    amount: (Math.random() * 1000).toFixed(2), // Random amount for the transaction
+    status: ["Approved", "Rejected", "Pending"][Math.floor(Math.random() * 3)], // Random status
   }));
 
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // Status filter
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
@@ -23,14 +23,15 @@ const Table = () => {
 
   // Filter data
   const filteredData = data.filter((row) => {
-    const matchesName = row.driverName
+    const matchesName = row.transactionId
       .toLowerCase()
       .includes(filter.toLowerCase());
+    const matchesStatus = statusFilter ? row.status === statusFilter : true; // Filter by status if selected
     const withinDateRange =
-      (!startDate || row.date >= startDate) &&
-      (!endDate || row.date <= endDate);
+      (!startDate || new Date(row.date) >= new Date(startDate)) &&
+      (!endDate || new Date(row.date) <= new Date(endDate));
 
-    return matchesName && withinDateRange;
+    return matchesName && matchesStatus && withinDateRange;
   });
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -42,19 +43,39 @@ const Table = () => {
     setCurrentPage(newPage);
   };
 
+  const handleApplyFilter = () => {
+    setIsDateFilterOpen(false);
+  };
+
+  const statusColor = (status) => {
+    switch (status) {
+      case "Approved":
+        return "bg-green-500"; // Green for Approved
+      case "Rejected":
+        return "bg-red-500"; // Red for Rejected
+      case "Pending":
+        return "bg-yellow-500"; // Yellow for Pending
+      default:
+        return "";
+    }
+  };
+
   return (
-    <div className=" border-2 px-8 py-6 rounded-lg">
+    <div className="border-2 px-8 py-6 rounded-lg">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-3xl text-[var(--grayish)]">Drivers</h2>
+        <h2 className="text-3xl text-[var(--grayish)]">Transaction Reports</h2>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              placeholder="Filter by Driver Name..."
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
               className="border px-3 py-2 rounded-lg w-56"
-            />
+            >
+              <option value="">Filter by Status</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Pending">Pending</option>
+            </select>
           </div>
           <button
             onClick={() => setIsDateFilterOpen(true)}
@@ -103,7 +124,7 @@ const Table = () => {
                 Cancel
               </button>
               <button
-                onClick={() => setIsDateFilterOpen(false)}
+                onClick={handleApplyFilter}
                 className="px-4 py-2 rounded-lg bg-[var(--primary-green)] text-white"
               >
                 Apply Filter
@@ -116,22 +137,27 @@ const Table = () => {
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
-            <th className="py-3 font-normal ">Driver Name</th>
-            <th className="py-3 font-normal">Vehicle Number</th>
-            <th className="py-3 font-normal">Number of Trips</th>
-            <th className="py-3 font-normal">Phone Number</th>
-            <th className="py-3 font-normal">Date of Joining</th>
+            <th className="py-3 font-normal">Transaction Id</th>
+            <th className="py-3 font-normal">Amount</th>
+            <th className="py-3 font-normal">Date of Creation</th>
+            <th className="py-3 font-normal">Status</th>
           </tr>
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
-              <tr key={index} className="cursor-pointer  gap-1">
-                <td className="py-4 ">{row.driverName}</td>
-                <td className="py-4">{row.vehicleNumber}</td>
-                <td className="py-4">{row.trips}</td>
-                <td className="py-4">{row.phoneNumber}</td>
-                <td className="py-4">{row.date}</td>
+              <tr key={index} className="cursor-pointer gap-1">
+                <td className="py-4">{row.transactionId}</td>
+                <td className="py-4">${row.amount}</td>
+                <td className="py-4">{row.date.toISOString().split("T")[0]}</td>
+                <td className="py-4 flex items-center gap-2">
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full ${statusColor(
+                      row.status
+                    )}`}
+                  ></span>
+                  {row.status}
+                </td>
               </tr>
             ))
           ) : (

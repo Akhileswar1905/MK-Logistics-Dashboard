@@ -13,7 +13,7 @@ const ContractTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState(""); // New state for the filter
 
-  const rowsPerPage = 15;
+  const rowsPerPage = 10;
 
   // Filter data
   const filteredData = data.filter((row) =>
@@ -56,13 +56,13 @@ const ContractTable = () => {
         </thead>
         <tbody>
           {currentRows.map((row, index) => (
-            <tr key={index}>
-              <td className="py-2 items-center">
-                <div className="w-[25px] h-[25px] rounded-full bg-[#ddd]"></div>
+            <tr key={index} className="cursor-pointer ">
+              <td className="py-4">
+                <div className="w-[30px] h-[30px] rounded-full bg-[#ddd]"></div>
               </td>
-              <td className="py-2">{row.companyName}</td>
-              <td className="py-2">{row.phoneNumber}</td>
-              <td className="py-2">{row.date}</td>
+              <td className="py-4">{row.companyName}</td>
+              <td className="py-4">{row.phoneNumber}</td>
+              <td className="py-4">{row.date}</td>
             </tr>
           ))}
         </tbody>
