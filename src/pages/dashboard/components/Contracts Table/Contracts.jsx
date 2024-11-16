@@ -26,18 +26,15 @@ const ContractTable = () => {
       </div>
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
-          <tr className="font-light">
-            <th className="py-3 font-normal">Company Picture</th>
-            <th className="py-3 font-normal">Company Name</th>
-          </tr>
+          <tr className="font-light"></tr>
         </thead>
         <tbody>
           {currentRows.map((row, index) => (
             <tr key={index}>
-              <td className="py-2 items-center">
+              <td className="py-3 flex gap-4 items-center">
                 <div className="w-[25px] h-[25px] rounded-full bg-[#ddd]"></div>
+                {row.companyName}
               </td>
-              <td className="py-2">{row.companyName}</td>
             </tr>
           ))}
         </tbody>

@@ -48,7 +48,6 @@ const ContractTable = () => {
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
-            <th className="py-3 font-normal">Company Picture</th>
             <th className="py-3 font-normal">Company Name</th>
             <th className="py-3 font-normal">Contact Number</th>
             <th className="py-3 font-normal">Date of Contract</th>
@@ -57,10 +56,10 @@ const ContractTable = () => {
         <tbody>
           {currentRows.map((row, index) => (
             <tr key={index} className="cursor-pointer ">
-              <td className="py-4">
+              <td className="py-4 flex items-center gap-3">
                 <div className="w-[30px] h-[30px] rounded-full bg-[#ddd]"></div>
+                {row.companyName}
               </td>
-              <td className="py-4">{row.companyName}</td>
               <td className="py-4">{row.phoneNumber}</td>
               <td className="py-4">{row.date}</td>
             </tr>

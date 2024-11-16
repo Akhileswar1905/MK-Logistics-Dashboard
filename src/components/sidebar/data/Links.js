@@ -9,7 +9,6 @@ import Drivers from "../../../pages/drivers/page";
 import NewDrivers from "../../../pages/new-drivers/page";
 import Reports from "../../../pages/reports/page";
 import UpdateRequests from "../../../pages/update-requests/page";
-
 export const links = [
   {
     name: "Dashboard",
@@ -24,6 +23,7 @@ export const links = [
     icon: MdDirectionsCarFilled,
     requests: 0,
     component: Drivers,
+    detailsPath: "/drivers/:id",
   },
   {
     name: "Contracts",
@@ -31,6 +31,7 @@ export const links = [
     icon: FaFileContract,
     requests: 0,
     component: Contracts,
+    detailsPath: "/contracts/:id",
   },
   {
     name: "New Drivers Requests",
@@ -38,6 +39,7 @@ export const links = [
     icon: IoIosNotifications,
     requests: 0,
     component: NewDrivers,
+    detailsPath: "/new-driver/:id",
   },
   {
     name: "Trip Update Requests",
@@ -45,6 +47,7 @@ export const links = [
     icon: HiPencilAlt,
     requests: 0,
     component: UpdateRequests,
+    detailsPath: "/trip-update/:id",
   },
   {
     name: "Transaction Reports",
@@ -52,5 +55,6 @@ export const links = [
     icon: FaMoneyBillAlt,
     requests: 0,
     component: Reports,
+    detailsPath: "/transaction-reports/:id",
   },
 ];

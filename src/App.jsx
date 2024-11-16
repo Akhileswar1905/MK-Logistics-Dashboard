@@ -1,30 +1,55 @@
-// App.js
 import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout/Layout";
 import { links } from "./components/sidebar/data/Links";
 import Login from "./pages/auth/Login/Login";
+import NotFound from "./404/page";
+import DriverDetailsPage from "./pages/drivers/detailedPage";
+import ContractDetailsPage from "./pages/contracts/detailedPage";
+import NewDriverDetailsPage from "./pages/new-drivers/detailedPage";
+import UpdateRequestDetailsPage from "./pages/update-requests/detailedPage";
+import TransactionReportDetailsPage from "./pages/reports/detailedPage";
 
 function App() {
-  const location = useLocation(); // Get the current location
+  const location = useLocation();
+
+  // Check if the current route is valid for Layout
+  const isValidRoute = links.some((link) => {
+    const isDynamicRoute = link.detailsPath
+      ? location.pathname.startsWith(link.path) ||
+        location.pathname.startsWith(link.detailsPath.split("/:")[0])
+      : location.pathname === link.path;
+    return isDynamicRoute;
+  });
 
   return (
     <div>
-      {/* Conditionally render Layout based on the route */}
-      {location.pathname !== "/login" && (
+      {/* Conditionally render Layout */}
+      {location.pathname !== "/login" && isValidRoute && (
         <Layout>
           <Routes>
             {links.map((link, index) => {
               const Comp = link.component;
               return <Route key={index} path={link.path} element={<Comp />} />;
             })}
+            <Route path="/drivers/:id" element={<DriverDetailsPage />} />
+            <Route path="/contracts/:id" element={<ContractDetailsPage />} />
+            <Route path="/new-driver/:id" element={<NewDriverDetailsPage />} />
+            <Route
+              path="/trip-update/:id"
+              element={<UpdateRequestDetailsPage />}
+            />
+            <Route
+              path="/transaction-reports/:id"
+              element={<TransactionReportDetailsPage />}
+            />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
       )}
 
-      {/* Login route doesn't require the Layout */}
+      {/* Routes for login and page not found */}
       <Routes>
-        <Route path="*" element={<h1>Page Not Found</h1>} />
         <Route path="/login" element={<Login />} />
       </Routes>
     </div>

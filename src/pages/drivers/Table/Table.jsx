@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
+import { NavLink } from "react-router-dom";
 
 const Table = () => {
   const data = Array.from({ length: 100 }, (_, i) => ({
@@ -127,7 +128,9 @@ const Table = () => {
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
               <tr key={index} className="cursor-pointer  gap-1">
-                <td className="py-4 ">{row.driverName}</td>
+                <NavLink to={`/drivers/${index}`}>
+                  <td className="py-4 ">{row.driverName}</td>
+                </NavLink>
                 <td className="py-4">{row.vehicleNumber}</td>
                 <td className="py-4">{row.trips}</td>
                 <td className="py-4">{row.phoneNumber}</td>
