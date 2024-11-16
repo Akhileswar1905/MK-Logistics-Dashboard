@@ -18,13 +18,13 @@ function App() {
               const Comp = link.component;
               return <Route key={index} path={link.path} element={<Comp />} />;
             })}
-            <Route path="*" element={<h1>Page Not Found</h1>} />
           </Routes>
         </Layout>
       )}
 
       {/* Login route doesn't require the Layout */}
       <Routes>
+        <Route path="*" element={<h1>Page Not Found</h1>} />
         <Route path="/login" element={<Login />} />
       </Routes>
     </div>
