@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout/Layout";
 import { links } from "./components/sidebar/data/Links";
@@ -9,6 +9,9 @@ import ContractDetailsPage from "./pages/contracts/detailedPage";
 import NewDriverDetailsPage from "./pages/new-drivers/detailedPage";
 import UpdateRequestDetailsPage from "./pages/update-requests/detailedPage";
 import TransactionReportDetailsPage from "./pages/reports/detailedPage";
+import Trips from "./pages/drivers/subpages/Trips";
+import Earnings from "./pages/drivers/subpages/Earnings";
+import BioData from "./pages/drivers/subpages/BioData";
 
 function App() {
   const location = useLocation();
@@ -32,7 +35,12 @@ function App() {
               const Comp = link.component;
               return <Route key={index} path={link.path} element={<Comp />} />;
             })}
-            <Route path="/drivers/:id" element={<DriverDetailsPage />} />
+            <Route path="/drivers/:id" element={<DriverDetailsPage />}>
+              <Route index element={<Navigate to="bio-data" replace />} />
+              <Route path="bio-data" element={<BioData />} />
+              <Route path="trips" element={<Trips />} />
+              <Route path="earnings" element={<Earnings />} />
+            </Route>
             <Route path="/contracts/:id" element={<ContractDetailsPage />} />
             <Route path="/new-driver/:id" element={<NewDriverDetailsPage />} />
             <Route

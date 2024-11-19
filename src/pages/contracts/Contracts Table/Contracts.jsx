@@ -1,23 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
+import { UserContext } from "../../../context/UserContext";
 
 const ContractTable = () => {
-  const data = Array.from({ length: 100 }, (_, i) => ({
-    companyName: `Company ${i + 1}`,
-    phoneNumber: `${Math.floor(Math.random() * 10000000000)}`,
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-  }));
-
+  const { user } = useContext(UserContext);
+  const [companies, setCompanies] = useState(user?.contracts || []); // Use user contracts
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState(""); // New state for the filter
 
   const rowsPerPage = 10;
 
   // Filter data
-  const filteredData = data.filter((row) =>
-    row.companyName.toLowerCase().includes(filter.toLowerCase())
+  const filteredData = companies.filter((row) =>
+    row.companyName.toLowerCase().startsWith(filter.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -41,7 +36,7 @@ const ContractTable = () => {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Filter by Company Name"
-            className="border px-3 py-2 rounded-lg "
+            className="border px-3 py-2 rounded-lg"
           />
         </div>
       </div>
@@ -55,13 +50,13 @@ const ContractTable = () => {
         </thead>
         <tbody>
           {currentRows.map((row, index) => (
-            <tr key={index} className="cursor-pointer ">
+            <tr key={index} className="cursor-pointer">
               <td className="py-4 flex items-center gap-3">
                 <div className="w-[30px] h-[30px] rounded-full bg-[#ddd]"></div>
                 {row.companyName}
               </td>
-              <td className="py-4">{row.phoneNumber}</td>
-              <td className="py-4">{row.date}</td>
+              <td className="py-4">{row.contactNumber}</td>
+              <td className="py-4">{row.dateOfContract}</td>
             </tr>
           ))}
         </tbody>

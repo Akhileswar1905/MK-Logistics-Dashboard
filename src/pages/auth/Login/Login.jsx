@@ -1,10 +1,37 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { useLogin } from "../../../hooks/useLogin";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-const Login = () => {
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
+const Login = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [error, setError] = useState(null);
+  const login = useLogin();
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  if (user && localStorage.getItem("userId") !== undefined) {
+    navigate("/");
+  }
   const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev); // Toggle between true and false
+    setShowPassword((prev) => !prev);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await login(form);
+    if (res.status !== 200) {
+      setError(res.data || "An error occurred");
+    }
   };
 
   return (
@@ -13,7 +40,7 @@ const Login = () => {
         <h2 className="text-2xl font-semibold text-center mb-6 text-[var(--grayish)]">
           Login
         </h2>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-[var(--grayish)]" htmlFor="username">
               Username:
@@ -24,6 +51,8 @@ const Login = () => {
               id="username"
               required
               className="w-full border px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-[var(--grayish)]"
+              onChange={handleInputChange}
+              value={form.username}
             />
           </div>
           <div className="relative">
@@ -31,24 +60,23 @@ const Login = () => {
               Password:
             </label>
             <input
-              type={showPassword ? "text" : "password"} // Conditionally render input type
+              type={showPassword ? "text" : "password"}
               name="password"
               id="password"
               required
               className="w-full border px-4 py-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-[var(--grayish)]"
+              onChange={handleInputChange}
+              value={form.password}
             />
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-4 bottom-3 text-[var(--grayish)]"
+              className="absolute right-4 top-10 text-[var(--grayish)]"
             >
-              {showPassword ? (
-                <IoMdEyeOff size={20} /> // Eye icon to hide password
-              ) : (
-                <IoMdEye size={20} /> // Eye icon to show password
-              )}
+              {showPassword ? <IoMdEyeOff size={20} /> : <IoMdEye size={20} />}
             </button>
           </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           <div>
             <input
               type="submit"

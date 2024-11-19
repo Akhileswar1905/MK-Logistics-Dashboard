@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
+import { UserContext } from "../../../../context/UserContext";
 
 const ContractTable = () => {
-  const data = Array.from({ length: 20 }, (_, i) => ({
-    companyName: `Company ${i + 1}`,
-  }));
+  const { user } = useContext(UserContext);
+  const [companies, setCompanies] = useState(user?.contracts || []);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5;
+  const rowsPerPage = 3;
 
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.ceil(companies.length / rowsPerPage);
 
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentRows = data.slice(startIndex, startIndex + rowsPerPage);
+  const currentRows = companies.slice(startIndex, startIndex + rowsPerPage);
 
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -26,7 +26,9 @@ const ContractTable = () => {
       </div>
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
-          <tr className="font-light"></tr>
+          <tr className="font-light">
+            <th className="py-3 font-normal">Company Name</th>
+          </tr>
         </thead>
         <tbody>
           {currentRows.map((row, index) => (

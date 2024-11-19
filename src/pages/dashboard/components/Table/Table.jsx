@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
+import { UserContext } from "../../../../context/UserContext";
+import { NavLink } from "react-router-dom";
 
 const Table = () => {
-  const data = Array.from({ length: 100 }, (_, i) => ({
-    driverName: `Driver ${i + 1}`,
-    vehicleNumber: `Vehicle ${i + 1}`,
-    trips: Math.floor(Math.random() * 100),
-    amountPaid: `$${(Math.random() * 1000).toFixed(2)}`,
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
+  const { user } = useContext(UserContext);
+  const [drivers, setDrivers] = useState(user?.drivers || []);
+
+  // Get the data for table rows using the driver's information
+  const data = drivers.map((driver) => ({
+    username: driver.username, // Assuming the driver has a `name` property
+    vehicleNumber: driver.vehicleNumber, // Assuming the driver has a `vehicleNumber` property
+    trips: driver.tripDetails.length, // Count the number of trips from the `tripDetails` array
+    phoneNumber: driver.phoneNumber, // Assuming the driver has a `phoneNumber`
+    email: driver.email, // Assuming the driver has a `email` property
+    dob: driver.dob,
+    tripDetails: driver.tripDetails,
+    earnings: driver.earnings,
+    photo: driver.photo,
+    amountPaid: `₹${driver.tripDetails
+      .reduce((total, trip) => total + parseFloat(trip.amount || 0), 0)
+      .toFixed(2)}`, // Sum up the amounts paid in all trips
+    // date: new Date(driver.createdAt).toISOString().split("T")[0], // Assuming `createdAt` is available to show the date when the driver was added
   }));
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,9 +35,9 @@ const Table = () => {
 
   // Filter data
   const filteredData = data.filter((row) => {
-    const matchesName = row.driverName
+    const matchesName = row.username
       .toLowerCase()
-      .includes(filter.toLowerCase());
+      .startsWith(filter.toLowerCase());
     const withinDateRange =
       (!startDate || row.date >= startDate) &&
       (!endDate || row.date <= endDate);
@@ -56,13 +68,13 @@ const Table = () => {
               className="border px-3 py-2 rounded-lg w-56"
             />
           </div>
-          <button
+          {/* <button
             onClick={() => setIsDateFilterOpen(true)}
             className="text-[var(--grayish)] cursor-pointer flex items-center gap-1"
           >
             <BiFilterAlt size={25} />
             Filter by Date
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -127,11 +139,16 @@ const Table = () => {
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
               <tr key={index}>
-                <td className="py-2">{row.driverName}</td>
+                <NavLink
+                  to={`/drivers/${row.phoneNumber}/bio-data`}
+                  state={{ driver: row }}
+                >
+                  <td className="py-4 ">{row.username}</td>
+                </NavLink>{" "}
                 <td className="py-2">{row.vehicleNumber}</td>
                 <td className="py-2">{row.trips}</td>
                 <td className="py-2">{row.amountPaid}</td>
-                <td className="py-2">{row.date}</td>
+                {/* <td className="py-2">{row.date}</td> */}
               </tr>
             ))
           ) : (
@@ -145,7 +162,7 @@ const Table = () => {
       </table>
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {totalPages > 0 && (
         <div className="flex justify-center mt-4 items-center">
           <button
             onClick={() => changePage(currentPage - 1)}

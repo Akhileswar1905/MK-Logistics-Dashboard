@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { links } from "./data/Links";
+import { UserContext } from "../../context/UserContext";
 
 const Sidebar = () => {
+  const { setUser } = useContext(UserContext);
+
   return (
     <div className="flex flex-[0.17] border-r-[0.5px]  flex-col gap-5 px-2 py-7   h-screen sticky top-0">
       <div className="flex items-center gap-5">
@@ -38,7 +41,13 @@ const Sidebar = () => {
         </ul>
       </div>
       <div className="absolute bottom-0 my-5 w-[95%] items-center ">
-        <div className="bg-red-600 px-3 py-2 text-center cursor-pointer rounded-md text-white ">
+        <div
+          className="bg-red-600 px-3 py-2 text-center cursor-pointer rounded-md text-white "
+          onClick={() => {
+            localStorage.removeItem("userId");
+            setUser(null);
+          }}
+        >
           Logout
         </div>
       </div>
