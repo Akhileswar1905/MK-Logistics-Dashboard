@@ -74,6 +74,28 @@ const Earnings = () => {
         </button>
       </h2>
 
+      {/* Driver Bank details table*/}
+      <table className="">
+        <thead>
+          <tr>
+            <th className="px-4 py-2 text-left text-[var(--grayish)]">
+              Account Number
+            </th>
+            <th className="px-4 py-2 text-left text-[var(--grayish)]">PAN</th>
+            <th className="px-4 py-2 text-left text-[var(--grayish)]">
+              IFSC Number
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="px-4 py-2 text-left">{driver.AccNumber}</td>
+            <td className="px-4 py-2 text-left">{driver.PAN}</td>
+            <td className="px-4 py-2 text-left">{driver.IFSC}</td>
+          </tr>
+        </tbody>
+      </table>
+
       {/* Earnings Display */}
       <div className="text-5xl font-bold text-[var(--primary-green)] text-center m-4 p-8">
         ₹ {formattedEarnings}

@@ -1,33 +1,31 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
+import { UserContext } from "../../../context/UserContext";
+import { NavLink, useNavigate } from "react-router-dom";
+import { acceptDriver, rejectDriver } from "../../../lib/utils";
 
 const Table = () => {
-  const data = Array.from({ length: 100 }, (_, i) => ({
-    driverName: `Driver ${i + 1}`,
-    vehicleNumber: `Vehicle ${i + 1}`,
-    phoneNumber: `${Math.floor(Math.random() * 10000000000)}`,
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-  }));
-
+  const { user } = useContext(UserContext);
+  const drivers = user?.requests || []; // Use drivers from the user context
+  console.log(drivers);
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
+  const router = useNavigate();
 
   const rowsPerPage = 10;
 
-  // Filter data
-  const filteredData = data.filter((row) => {
-    const matchesName = row.driverName
-      .toLowerCase()
+  // Filter drivers based on search and date range
+  const filteredData = drivers.filter((driver) => {
+    const matchesName = driver.username
+      ?.toLowerCase()
       .includes(filter.toLowerCase());
     const withinDateRange =
-      (!startDate || row.date >= startDate) &&
-      (!endDate || row.date <= endDate);
+      (!startDate || driver.date >= startDate) &&
+      (!endDate || driver.date <= endDate);
 
     return matchesName && withinDateRange;
   });
@@ -41,8 +39,23 @@ const Table = () => {
     setCurrentPage(newPage);
   };
 
+  const handleAccept = async (e, id) => {
+    e.preventDefault();
+    const res = await acceptDriver(id);
+    if (res) {
+      router("/drivers");
+    }
+  };
+
+  const handleDecline = async (e, id) => {
+    e.preventDefault();
+    const res = await rejectDriver(id);
+    if (res) {
+      router("/drivers");
+    }
+  };
   return (
-    <div className=" border-2 px-8 py-6 rounded-lg">
+    <div className="border-2 px-8 py-6 rounded-lg">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-3xl text-[var(--grayish)]">Joining Requests</h2>
         <div className="flex gap-4">
@@ -124,16 +137,27 @@ const Table = () => {
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
-              <tr key={index} className="cursor-pointer  gap-1">
-                <td className="py-2 ">{row.driverName}</td>
+              <tr key={index} className="cursor-pointer gap-1">
+                <NavLink
+                  to={`/new-driver/${row.phoneNumber}/bio-data`}
+                  state={{ driver: row }}
+                >
+                  <td className="py-2">{row.username}</td>
+                </NavLink>
                 <td className="py-2">{row.vehicleNumber}</td>
                 <td className="py-2">{row.phoneNumber}</td>
-                <td className="py-2">{row.date}</td>
+                <td className="py-2">{row.dateOfJoining}</td>
                 <td className="py-2 flex gap-6">
-                  <button className="text-[var(--primary-green)] border-2 p-2 rounded-md">
+                  <button
+                    className="text-[var(--primary-green)] border-2 p-2 rounded-md"
+                    onClick={(e) => handleAccept(e, row._id)}
+                  >
                     Accept
                   </button>
-                  <button className="text-[red] border-2 p-2 rounded-md">
+                  <button
+                    className="text-[red] border-2 p-2 rounded-md"
+                    onClick={(e) => handleDecline(e, row._id)}
+                  >
                     Reject
                   </button>
                 </td>

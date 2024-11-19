@@ -7,24 +7,41 @@ import { useNavigate } from "react-router-dom";
 const Layout = ({ children }) => {
   const { user, loading } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+
   // Redirect to login if the user is not authenticated
   useEffect(() => {
-    if (user === null && !localStorage.getItem("userId")) {
+    if (!user && !localStorage.getItem("userId")) {
       navigate("/login", { replace: true });
-    }
-
-    if (loading) {
-      // Show loading state here or handle it accordingly.
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>;
-
-      return; // Return early to avoid unnecessary re-renders.
     }
   }, [user, navigate]);
 
+  // Loading State
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Admin Layout
+  if (isAdmin) {
+    return (
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1">
+          <Header />
+          {/* {children} */}
+        </div>
+      </div>
+    );
+  }
+
+  // General Layout
   return (
-    <div className="flex relative">
+    <div className="flex h-screen">
       <Sidebar />
       <div className="flex-1">
         <Header />

@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import Label from "../components/Label";
 
-const BioData = () => {
+const NewDriverBioData = () => {
   const location = useLocation();
   const { driver } = location.state;
 
@@ -53,4 +53,4 @@ const BioData = () => {
   );
 };
 
-export default BioData;
+export default NewDriverBioData;

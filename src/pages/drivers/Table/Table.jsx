@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
 import { NavLink } from "react-router-dom";
@@ -6,8 +6,14 @@ import { UserContext } from "../../../context/UserContext";
 
 const Table = () => {
   const { user } = useContext(UserContext);
-  const [drivers, setDrivers] = useState(user?.drivers || []); // Use actual driver data from user context
+  const [drivers, setDrivers] = useState([]); // Use actual driver data from user context
   console.log(drivers);
+
+  useEffect(() => {
+    if (!user) return; // If no user, just return or handle loading state
+    setDrivers(user.drivers); // Use actual driver data from user context
+  }, [user]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -131,7 +137,7 @@ const Table = () => {
                 <td className="py-4">{row.vehicleNumber}</td>
                 <td className="py-4">{row.tripDetails.length}</td>
                 <td className="py-4">{row.phoneNumber}</td>
-                {/* <td className="py-4">{row.date}</td> */}
+                <td className="py-4">{row.dateOfJoining}</td>
               </tr>
             ))
           ) : (

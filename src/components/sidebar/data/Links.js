@@ -9,6 +9,11 @@ import Drivers from "../../../pages/drivers/page";
 import NewDrivers from "../../../pages/new-drivers/page";
 import Reports from "../../../pages/reports/page";
 import UpdateRequests from "../../../pages/update-requests/page";
+
+// Check isAdmin from local storage
+const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
+console.log(typeof isAdmin);
+
 export const links = [
   {
     name: "Dashboard",
@@ -16,6 +21,7 @@ export const links = [
     icon: MdDashboard,
     requests: 0,
     component: Dashboard,
+    showForAdmin: true, // Only show for admin
   },
   {
     name: "Drivers",
@@ -24,6 +30,7 @@ export const links = [
     requests: 0,
     component: Drivers,
     detailsPath: "/drivers/:id",
+    showForAdmin: true, // Only show for admin
   },
   {
     name: "Contracts",
@@ -32,6 +39,7 @@ export const links = [
     requests: 0,
     component: Contracts,
     detailsPath: "/contracts/:id",
+    showForAdmin: true, // Only show for admin
   },
   {
     name: "New Drivers Requests",
@@ -40,6 +48,7 @@ export const links = [
     requests: 0,
     component: NewDrivers,
     detailsPath: "/new-driver/:id",
+    showForAdmin: false, // Show for all
   },
   {
     name: "Trip Update Requests",
@@ -48,6 +57,7 @@ export const links = [
     requests: 0,
     component: UpdateRequests,
     detailsPath: "/trip-update/:id",
+    showForAdmin: false, // Show for all
   },
   {
     name: "Transaction Reports",
@@ -56,5 +66,14 @@ export const links = [
     requests: 0,
     component: Reports,
     detailsPath: "/transaction-reports/:id",
+    showForAdmin: false, // Show for all
   },
 ];
+
+// Filter the links based on isAdmin
+export const filteredLinks = links.filter((link) => {
+  if (link.showForAdmin) {
+    return isAdmin; // Show only if isAdmin is true
+  }
+  return true; // Show for all users
+});

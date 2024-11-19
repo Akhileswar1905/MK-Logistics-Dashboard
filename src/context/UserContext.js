@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      let base = "https://polygon-project.onrender.com";
+      let base = "http://localhost:5050";
       const isAdmin = localStorage.getItem("isAdmin") === "true";
 
       if (isAdmin) {

@@ -12,6 +12,7 @@ import TransactionReportDetailsPage from "./pages/reports/detailedPage";
 import Trips from "./pages/drivers/subpages/Trips";
 import Earnings from "./pages/drivers/subpages/Earnings";
 import BioData from "./pages/drivers/subpages/BioData";
+import NewDriverBioData from "./pages/new-drivers/subpages/NewDriver-BioData";
 
 function App() {
   const location = useLocation();
@@ -42,7 +43,10 @@ function App() {
               <Route path="earnings" element={<Earnings />} />
             </Route>
             <Route path="/contracts/:id" element={<ContractDetailsPage />} />
-            <Route path="/new-driver/:id" element={<NewDriverDetailsPage />} />
+            <Route path="/new-driver/:id" element={<NewDriverDetailsPage />}>
+              <Route index element={<Navigate to="bio-data" replace />} />
+              <Route path="bio-data" element={<NewDriverBioData />} />
+            </Route>
             <Route
               path="/trip-update/:id"
               element={<UpdateRequestDetailsPage />}

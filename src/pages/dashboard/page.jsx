@@ -8,10 +8,60 @@ const Dashboard = () => {
   const { user } = useContext(UserContext);
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalTrips, setTotaltrips] = useState(0);
+  const [updateTotalTrips, setUpdateTotaltrips] = useState(0);
+  const [updateContracts, setUpdateContracts] = useState(0);
 
   useEffect(() => {
     if (!user) return; // If no user, just return or handle loading state
+    setUpdateTotaltrips(0);
+    setUpdateContracts(0);
+    const today = new Date();
 
+    const yesterdayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0
+    );
+    const thirtyDaysBack = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - 30,
+      0,
+      0,
+      0
+    );
+
+    const yesterdayEnd = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      today.getHours(),
+      today.getMinutes(),
+      today.getSeconds()
+    );
+
+    user?.contracts.forEach((contract) => {
+      if (contract.createAt) {
+        const createAt = new Date(contract.createAt);
+        if (thirtyDaysBack <= createAt && createAt >= yesterdayStart) {
+          setUpdateContracts((prevTotal) => prevTotal + 1);
+          console.log(contract.companyName);
+        }
+      }
+    });
+
+    user?.drivers.forEach((driver) => {
+      driver?.tripDetails.forEach((trip) => {
+        const lis = trip.tripDate.split("-");
+        const tripDate = new Date(lis[2], parseInt(lis[1]) - 1, lis[0]);
+        if (tripDate >= yesterdayStart && tripDate <= yesterdayEnd) {
+          setUpdateTotaltrips((prevTotal) => prevTotal + 1);
+        }
+      });
+    });
     console.log(user.contracts);
     let x = 0;
     user?.drivers.forEach((driver) => {
@@ -48,18 +98,14 @@ const Dashboard = () => {
         <Card
           title={"Total Trips"}
           value={totalTrips}
-          update={
-            totalTrips - user?.prevTrips > 0
-              ? `+${totalTrips - user?.prevTrips}`
-              : totalTrips - user?.prevTrips
-          }
+          update={`+${updateTotalTrips}`}
           width={"33%"}
-          msg={` Compared to yesterday`}
+          msg={`Trips today`}
         />
         <Card
           title={"Total Contracts"}
           value={user?.contracts.length}
-          update={user?.prevContracts}
+          update={`+${updateContracts}`}
           width={"33%"}
         />
       </div>

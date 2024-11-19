@@ -1,24 +1,29 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { UserContext } from "../../../context/UserContext";
+import { NavLink } from "react-router-dom";
 
 const ContractTable = () => {
-  const { user } = useContext(UserContext);
-  const [companies, setCompanies] = useState(user?.contracts || []); // Use user contracts
+  const [companies, setCompanies] = useState([]); // Use user contracts
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState(""); // New state for the filter
-
   const rowsPerPage = 10;
-
+  const { user } = useContext(UserContext);
+  useEffect(() => {
+    setCompanies(user?.contracts); // Use actual driver data from user context
+    console.log(companies); // Log for debugging purposes. Remove in production.
+    // Update the current page when the user contracts change.
+    setCurrentPage(1); // Reset the current page to 1 when the user contracts change.
+  }, [user]);
   // Filter data
-  const filteredData = companies.filter((row) =>
+  const filteredData = companies?.filter((row) =>
     row.companyName.toLowerCase().startsWith(filter.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredData?.length / rowsPerPage);
 
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentRows = filteredData.slice(startIndex, startIndex + rowsPerPage);
+  const currentRows = filteredData?.slice(startIndex, startIndex + rowsPerPage);
 
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -49,14 +54,19 @@ const ContractTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currentRows.map((row, index) => (
+          {currentRows?.map((row, index) => (
             <tr key={index} className="cursor-pointer">
-              <td className="py-4 flex items-center gap-3">
-                <div className="w-[30px] h-[30px] rounded-full bg-[#ddd]"></div>
-                {row.companyName}
-              </td>
+              <NavLink
+                to={`/contracts/${row.companyId}`}
+                state={{ contract: row }}
+              >
+                <td className="py-4 flex items-center gap-3">
+                  <div className="w-[30px] h-[30px] rounded-full bg-[#ddd]"></div>
+                  {row.companyName}
+                </td>
+              </NavLink>
               <td className="py-4">{row.contactNumber}</td>
-              <td className="py-4">{row.dateOfContract}</td>
+              <td className="py-4">{row.createAt}</td>
             </tr>
           ))}
         </tbody>
