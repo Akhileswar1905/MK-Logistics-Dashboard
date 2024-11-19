@@ -7,7 +7,6 @@ import { NavLink } from "react-router-dom";
 const Table = () => {
   const { user } = useContext(UserContext);
   const [drivers, setDrivers] = useState(user?.drivers || []);
-
   // Get the data for table rows using the driver's information
   const data = drivers.map((driver) => ({
     username: driver.username, // Assuming the driver has a `name` property

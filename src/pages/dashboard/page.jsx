@@ -8,6 +8,7 @@ const Dashboard = () => {
   const { user } = useContext(UserContext);
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalTrips, setTotaltrips] = useState(0);
+
   useEffect(() => {
     if (!user) return; // If no user, just return or handle loading state
 
@@ -47,7 +48,11 @@ const Dashboard = () => {
         <Card
           title={"Total Trips"}
           value={totalTrips}
-          update={totalTrips - user?.prevTrips}
+          update={
+            totalTrips - user?.prevTrips > 0
+              ? `+${totalTrips - user?.prevTrips}`
+              : totalTrips - user?.prevTrips
+          }
           width={"33%"}
           msg={` Compared to yesterday`}
         />
