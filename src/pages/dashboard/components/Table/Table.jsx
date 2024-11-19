@@ -18,7 +18,7 @@ const Table = () => {
     tripDetails: driver.tripDetails,
     earnings: driver.earnings,
     photo: driver.photo,
-    amountPaid: `₹${driver.tripDetails
+    amountPaid: `₹${driver.earnings
       .reduce((total, trip) => total + parseFloat(trip.amount || 0), 0)
       .toFixed(2)}`, // Sum up the amounts paid in all trips
     // date: new Date(driver.createdAt).toISOString().split("T")[0], // Assuming `createdAt` is available to show the date when the driver was added

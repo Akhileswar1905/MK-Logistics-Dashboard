@@ -59,7 +59,7 @@ const Dashboard = () => {
         <Card
           title={"Total Contracts"}
           value={user?.contracts.length}
-          update={"0"}
+          update={user?.prevContracts}
           width={"33%"}
         />
       </div>
