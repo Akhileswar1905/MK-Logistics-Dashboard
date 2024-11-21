@@ -6,7 +6,7 @@ import { UserContext } from "../../context/UserContext";
 import { getAllDrivers } from "../../lib/utils";
 
 const Dashboard = () => {
-  const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext); // Get user context
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [dashboardMetrics, setDashboardMetrics] = useState({
@@ -19,18 +19,17 @@ const Dashboard = () => {
     updateControlPanels: 0,
   });
   const [drivers, setDrivers] = useState([]);
-
-  // Utility function to parse date in DD-MM-YYYY format
+  // Utility function to parse date
   const parseDate = (dateStr) => {
-    const [day, month, year] = dateStr.split("-").map(Number);
-    return new Date(year, month - 1, day);
+    if (typeof dateStr === "string") {
+      const [day, month, year] = dateStr.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+    return new Date(dateStr);
   };
 
-  useEffect(() => {
-    if (!user) {
-      console.warn("User data not available");
-      return;
-    }
+  // Calculate metrics for non-admin users
+  const calculateMetrics = () => {
     const today = new Date();
     const thirtyDaysBack = new Date(
       today.getFullYear(),
@@ -45,126 +44,141 @@ const Dashboard = () => {
       0,
       0
     );
-    const calculateMetrics = () => {
-      let tempContracts = 0;
-      let tempTrips = 0;
-      let tempDrivers = 0;
 
-      // Count contracts created within the last 30 days
-      user?.contracts.forEach((contract) => {
-        const createAt = new Date(contract.createdAt);
-        if (createAt >= thirtyDaysBack) {
-          tempContracts++;
+    let tempContracts = 0;
+    let tempTrips = 0;
+    let tempDrivers = 0;
+    let cons = 0;
+
+    cons = user?.contracts;
+    user?.contracts?.forEach((contract) => {
+      const createAt = new Date(contract.createdAt);
+      if (createAt >= thirtyDaysBack) {
+        tempContracts++;
+      }
+    });
+
+    user?.drivers?.forEach((driver) => {
+      driver.tripDetails.forEach((trip) => {
+        const tripDate = parseDate(trip.tripDate);
+        if (tripDate >= yesterdayStart && tripDate <= today) {
+          tempTrips++;
         }
       });
 
-      // Count trips within the last day
-      user.drivers.forEach((driver) => {
-        driver.tripDetails.forEach((trip) => {
-          const tripDate = parseDate(trip.tripDate);
-          if (tripDate >= yesterdayStart && tripDate <= today) {
-            tempTrips++;
-          }
-        });
+      const joinDate = new Date(driver.dateOfJoining);
+      if (joinDate >= thirtyDaysBack) {
+        tempDrivers++;
+      }
+    });
 
-        // Count drivers who joined within the last 30 days
-        const joinDate = new Date(driver.dateOfJoining);
-        if (joinDate >= thirtyDaysBack) {
-          tempDrivers++;
-        }
-      });
+    const totalDriversTrips = user?.drivers?.reduce(
+      (acc, driver) => acc + driver.tripDetails.length,
+      0
+    );
+    const totalAmountTransferred = user?.reports?.reduce(
+      (acc, report) => (report.status === "Done" ? acc + report.amount : acc),
+      0
+    );
 
-      // Calculate total trips and total amount transferred
-      const totalDriversTrips = user.drivers.reduce(
-        (acc, driver) => acc + driver.tripDetails.length,
-        0
-      );
-      const totalAmountTransferred = user.reports.reduce(
-        (acc, report) => (report.status === "Done" ? acc + report.amount : acc),
-        0
-      );
+    setDashboardMetrics((prev) => ({
+      ...prev,
+      totalAmount: totalAmountTransferred,
+      totalTrips: totalDriversTrips,
+      totalDrivers: tempDrivers,
+      updateTotalTrips: tempTrips,
+      updateContracts: tempContracts,
+    }));
+  };
 
-      setDashboardMetrics({
-        totalAmount: totalAmountTransferred,
-        totalTrips: totalDriversTrips,
-        totalDrivers: tempDrivers,
-        updateTotalTrips: tempTrips,
-        updateContracts: tempContracts,
-      });
-    };
+  // Calculate metrics for admin users
+  const calculateAdminMetrics = async () => {
+    const today = new Date();
+    const thirtyDaysBack = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - 30
+    );
 
-    const calculateAdminMetrics = async () => {
-      let tempDrivers = 0;
-      let tempControlPanels = 0;
-      let tempContracts = 0;
+    const drivers = await getAllDrivers().catch((err) => {
+      console.error("Error fetching drivers:", err);
+      return [];
+    });
 
-      // Count drivers who joined within the last 30 days
-      const drivers = await getAllDrivers();
+    let tempDrivers = 0;
+    let tempControlPanels = 0;
+    let tempContracts = 0;
+    let cons = 0;
 
-      drivers.forEach((driver) => {
-        const joinDate = new Date(driver.dateOfJoining);
-        if (joinDate >= thirtyDaysBack) {
-          tempDrivers++;
-        }
-      });
+    drivers.forEach((driver) => {
+      const joinDate = new Date(driver.dateOfJoining);
+      if (joinDate >= thirtyDaysBack) {
+        tempDrivers++;
+      }
+    });
 
-      // Count control panels created within the last 30 days
-      user[0]?.controlPanels.forEach((controlPanel) => {
-        const createdAt = new Date(controlPanel.dateOfJoining);
-        console.log(createdAt);
-        if (createdAt >= thirtyDaysBack) {
-          tempControlPanels++;
-        }
-      });
+    const userObj = Array.isArray(user) ? user : user;
+    user?.controlPanels?.forEach((controlPanel) => {
+      const createdAt = new Date(controlPanel.dateOfJoining);
+      console.log(thirtyDaysBack.toISOString().slice(0, 10));
+      if (createdAt >= thirtyDaysBack) {
+        tempControlPanels++;
+      }
+    });
 
-      // Count contracts created within the last 30 days
-      user[0]?.contracts.forEach((contract) => {
-        const createAt = new Date(contract.createdAt);
-        if (createAt >= thirtyDaysBack) {
-          tempContracts++;
-        }
-      });
+    cons = user?.contracts;
+    user?.contracts?.forEach((contract) => {
+      const createAt = new Date(contract.createdAt);
+      if (createAt >= thirtyDaysBack) {
+        tempContracts++;
+      }
+    });
 
-      setDashboardMetrics({
-        totalDrivers: tempDrivers,
-        updateContracts: tempContracts,
-        updateControlPanels: tempControlPanels,
-      });
-      setDrivers(drivers);
-    };
+    setDashboardMetrics((prev) => ({
+      ...prev,
+      totalDrivers: tempDrivers,
+      updateContracts: tempContracts,
+      updateControlPanels: tempControlPanels,
+    }));
+    setDrivers(drivers);
+  };
 
-    setIsAdmin(user?.isAdmin);
-    if (!user?.isAdmin) {
-      calculateMetrics();
-    } else {
-      calculateAdminMetrics();
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
-  }, [user]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    const fetchMetrics = async () => {
+      setIsAdmin(user.isAdmin);
+      if (user.isAdmin) {
+        await calculateAdminMetrics();
+      } else {
+        calculateMetrics();
+      }
+      setLoading(false);
+    };
+
+    fetchMetrics();
+  }, [user]);
 
   return (
     <div className="flex flex-col gap-7 p-6">
       <div className="flex items-center justify-around">
-        {!isAdmin ? (
+        <Card
+          title={"Total Drivers"}
+          value={isAdmin ? drivers.length : user?.drivers?.length || 0}
+          update={`+${dashboardMetrics.totalDrivers}`}
+          width={"33%"}
+        />
+        {isAdmin ? (
           <Card
-            title={"Total Drivers"}
-            value={user?.drivers.length}
-            update={`+${dashboardMetrics.totalDrivers}`}
+            title={"Total Control Panels"}
+            value={user?.controlPanels?.length || 0}
+            update={`+${dashboardMetrics.updateControlPanels}`}
             width={"33%"}
           />
         ) : (
-          <Card
-            title={"Total Drivers"}
-            value={drivers.length}
-            update={`+${dashboardMetrics.totalDrivers}`}
-            width={"33%"}
-          />
-        )}
-        {!isAdmin ? (
           <Card
             title={"Total Trips"}
             value={dashboardMetrics.totalTrips}
@@ -172,43 +186,21 @@ const Dashboard = () => {
             width={"33%"}
             msg={`Trips today`}
           />
-        ) : (
-          <Card
-            title={"Total Control Panels"}
-            value={user[0]?.controlPanels.length}
-            update={`+${dashboardMetrics.updateControlPanels}`}
-            width={"33%"}
-          />
         )}
-        {isAdmin ? (
-          <Card
-            title={"Total Contracts"}
-            value={user[0]?.contracts.length}
-            update={`+${dashboardMetrics.updateContracts}`}
-            width={"33%"}
-          />
-        ) : (
-          <Card
-            title={"Total Contracts"}
-            value={user?.contracts.length}
-            update={`+${dashboardMetrics.updateContracts}`}
-            width={"33%"}
-          />
-        )}
+        <Card
+          title={"Total Contracts"}
+          value={user?.contracts.length || 0}
+          update={`+${dashboardMetrics.updateContracts}`}
+          width={"33%"}
+        />
       </div>
       <div className="flex gap-2">
         {!isAdmin && <Table />}
-        <div className="flex flex-col gap-2 w-[33%]">
-          {/* {!isAdmin && (
-            <Card
-              title={"Total Amount Transferred"}
-              value={dashboardMetrics.totalAmount}
-              update={"0"}
-              width={"100%"}
-            />
-          )} */}
-          <ContractTable />
-        </div>
+        {user && (
+          <div className="flex flex-col gap-2 w-[33%]">
+            <ContractTable />
+          </div>
+        )}
       </div>
     </div>
   );

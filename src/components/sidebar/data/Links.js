@@ -9,6 +9,7 @@ import Drivers from "../../../pages/drivers/page";
 import NewDrivers from "../../../pages/new-drivers/page";
 import Reports from "../../../pages/reports/page";
 import UpdateRequests from "../../../pages/update-requests/page";
+import ControlPanel from "../../../pages/control-panels/page";
 
 // Check isAdmin from local storage
 const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
@@ -37,7 +38,7 @@ export const links = [
     path: "/control-panels",
     icon: MdDirectionsCarFilled,
     requests: 0,
-    component: Drivers,
+    component: ControlPanel,
     detailsPath: "/control-panels/:id",
     onlyAdmin: true,
   },

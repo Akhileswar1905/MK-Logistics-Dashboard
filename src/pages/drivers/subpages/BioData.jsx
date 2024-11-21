@@ -42,6 +42,7 @@ const BioData = () => {
       <div>
         <h1 className="text-[var(--grayish)] text-2xl">Driving Details</h1>
         <div className="my-2 flex flex-wrap ">
+          {console.log(driver)}
           <Label label={"Driver License"} value={driver.DrivingLicense} />
           <Label label={"Vehicle RC"} value={driver.vehicleRC} />
           <Label label={"Vehicle Number"} value={driver.vehicleNumber} />

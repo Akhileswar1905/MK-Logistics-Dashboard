@@ -5,21 +5,22 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
     try {
       setLoading(true);
-      let base = "http://localhost:5050";
       const isAdmin = localStorage.getItem("isAdmin") === "true";
+      const userId = localStorage.getItem("userId");
 
-      if (isAdmin) {
-        base += "/admin";
-      } else {
-        const userId = localStorage.getItem("userId");
-        if (!userId) throw new Error("User ID not found");
-        base += `/cp/${userId}`;
+      if (!isAdmin && !userId) {
+        throw new Error("Missing authentication data in localStorage.");
       }
+
+      const base = isAdmin
+        ? "http://localhost:5050/admin"
+        : `http://localhost:5050/cp/${userId}`;
 
       const response = await fetch(base);
       if (!response.ok) {
@@ -27,10 +28,12 @@ export const UserProvider = ({ children }) => {
       }
 
       const data = await response.json();
+      console.log(data);
       setUser({ ...data, isAdmin });
     } catch (error) {
       console.error("Error fetching user:", error);
-      localStorage.clear();
+      localStorage.removeItem("userId");
+      localStorage.removeItem("isAdmin");
       setUser(null);
     } finally {
       setLoading(false);
@@ -38,13 +41,16 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!user && localStorage.getItem("userId") !== undefined) {
+    const userId = localStorage.getItem("userId");
+    if (!user && userId) {
       fetchUser();
     }
-  }, [user]);
+  }, []); // Dependency array doesn't include `user`.
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider
+      value={{ user, setUser, loading, isLoggedIn, setIsLoggedIn }}
+    >
       {children}
     </UserContext.Provider>
   );

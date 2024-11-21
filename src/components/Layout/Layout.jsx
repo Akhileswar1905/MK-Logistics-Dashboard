@@ -5,7 +5,7 @@ import { UserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const Layout = ({ children }) => {
-  const { user, loading } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
@@ -18,7 +18,7 @@ const Layout = ({ children }) => {
   }, [user, navigate]);
 
   // Loading State
-  if (loading) {
+  if (!user) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="w-16 h-16 border-4 border-[var(--primary-green)] border-t-transparent rounded-full animate-spin"></div>

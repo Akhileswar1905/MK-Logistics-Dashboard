@@ -13,15 +13,13 @@ export const useLogin = () => {
     try {
       const response = await axios.post(`${baseUrl}/login`, form);
 
-      if (response.status === 200) {
-        const isAdmin = form.username === "Admin";
+      const isAdmin = form.username === "Admin";
 
-        localStorage.setItem("isAdmin", isAdmin);
-        localStorage.setItem("userId", response.data._id);
-
-        setUser({ ...response.data, isAdmin });
-        navigate("/", { replace: true });
-      }
+      localStorage.setItem("isAdmin", isAdmin);
+      localStorage.setItem("userId", response.data._id);
+      setUser({ ...response.data, isAdmin });
+      console.log(response.data);
+      navigate("/", { replace: true });
 
       return response;
     } catch (error) {

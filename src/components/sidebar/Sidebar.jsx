@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { links } from "./data/Links";
 import { UserContext } from "../../context/UserContext";
 
 const Sidebar = () => {
   const { setUser } = useContext(UserContext);
-
+  const router = useNavigate();
   // Retrieve isAdmin from localStorage
   const isAdmin = JSON.parse(localStorage.getItem("isAdmin"));
 
@@ -64,6 +64,7 @@ const Sidebar = () => {
         <div
           className="bg-red-600 px-3 py-2 text-center cursor-pointer rounded-md text-white"
           onClick={() => {
+            router("/login");
             localStorage.removeItem("userId");
             localStorage.removeItem("isAdmin");
             setUser(null);

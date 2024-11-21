@@ -3,18 +3,17 @@ import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { UserContext } from "../../../../context/UserContext";
 
 const ContractTable = () => {
-  const { user } = useContext(UserContext);
-  const [companies, setCompanies] = useState(
-    user.isAdmin ? user[0]?.contracts : user?.contracts
-  );
+  const { user, loading } = useContext(UserContext);
+  console.log(loading);
+  const [companies, setCompanies] = useState(user?.contracts);
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 3;
 
-  const totalPages = Math.ceil(companies.length / rowsPerPage);
+  const totalPages = Math.ceil(companies?.length / rowsPerPage);
 
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentRows = companies.slice(startIndex, startIndex + rowsPerPage);
+  const currentRows = companies?.slice(startIndex, startIndex + rowsPerPage);
 
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -33,8 +32,8 @@ const ContractTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currentRows.length > 0 ? (
-            currentRows.map((row, index) => (
+          {currentRows?.length > 0 ? (
+            currentRows?.map((row, index) => (
               <tr key={index}>
                 <td className="py-3 flex gap-4 items-center">
                   <div className="w-[25px] h-[25px] rounded-full bg-[#ddd]"></div>

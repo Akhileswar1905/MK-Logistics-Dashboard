@@ -20,8 +20,11 @@ const Table = () => {
     photo: driver.photo,
     amountPaid: `₹${driver.earnings
       .reduce((total, trip) => total + parseFloat(trip.amount || 0), 0)
-      .toFixed(2)}`, // Sum up the amounts paid in all trips
-    // date: new Date(driver.createdAt).toISOString().split("T")[0], // Assuming `createdAt` is available to show the date when the driver was added
+      .toFixed(2)}`,
+    vehicleRC: driver.vehicleRC,
+    DrivingLicense: driver.DrivingLicense,
+    vehiclePhotos: driver.vehiclePhotos,
+    vehicleVideo: driver.vehicleVideo,
   }));
 
   const [currentPage, setCurrentPage] = useState(1);

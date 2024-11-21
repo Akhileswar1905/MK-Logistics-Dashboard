@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import Label from "./Label";
-import { createContract } from "../../../lib/utils";
+import { createPanel } from "../../../lib/utils";
 import { useNavigate } from "react-router-dom";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
-const ContractForm = () => {
+const PanelForm = () => {
   const [form, setForm] = useState({
-    companyName: "",
-    contactNumber: "",
-    email: "",
-    amount: "",
-    startDate: "",
-    endDate: "",
+    name: "",
+    username: "",
+    phoneNumber: "",
+    password: "",
     createdAt: new Date().toISOString().slice(0, 10),
   });
   const [error, setError] = useState(null);
@@ -22,58 +20,46 @@ const ContractForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(form);
-    const res = await createContract(form);
+    const res = await createPanel(form);
     if (res) {
-      setMessage("Contract created successfully! ");
-      router("/contracts");
+      setMessage("Panel created successfully! ");
+      router("/control-panels");
     } else {
-      setError("Failed to create contract!");
+      setError("Failed to create panel!");
     }
   };
 
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-grayish text-2xl">Contract Form</h1>
+      <h1 className="text-grayish text-2xl">Panel Form</h1>
       <form
         className="p-5 flex flex-col gap-6 flex-wrap"
         onSubmit={(e) => handleSubmit(e)}
       >
         <div className="flex flex-wrap gap-6">
           <Label
-            title={"Company Name"}
-            placeholder={"Company Name..."}
+            title={"Control Panel Name"}
+            placeholder={"User Name..."}
             type={"text"}
-            onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
           <Label
-            title={"Company Contact Number"}
-            placeholder={"Contact Number..."}
+            title={"Actual Name"}
+            placeholder={"Real Name..."}
             type={"text"}
-            onChange={(e) =>
-              setForm({ ...form, contactNumber: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <Label
-            title={"Company Email"}
-            placeholder={"Company Email..."}
-            type={"email"}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            title={"Phone Number"}
+            placeholder={"Panel Phone Number..."}
+            type={"text"}
+            onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
           />
           <Label
-            title={"Contract Price"}
-            placeholder={"Price..."}
-            type={"number"}
-            onChange={(e) => setForm({ ...form, amount: e.target.value })}
-          />
-          <Label
-            title={"Contract Start Date"}
-            type={"date"}
-            onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-          />
-          <Label
-            title={"Contract End Date"}
-            type={"date"}
-            onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+            title={"Password"}
+            placeholder={"Password..."}
+            type={"text"}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
         </div>
 
@@ -86,7 +72,7 @@ const ContractForm = () => {
               </p>
               <button
                 className="border-2 px-4 py-2 rounded-lg text-primary-green flex gap-3 items-center justify-center"
-                onClick={() => router("/contracts")}
+                onClick={() => router("/control-panels")}
               >
                 <IoMdArrowRoundBack />
                 Click to go back...
@@ -97,7 +83,7 @@ const ContractForm = () => {
               className="bg-primary-green text-white px-4 py-2 rounded-lg"
               type="submit"
             >
-              Create Contract{" "}
+              Create Panel{" "}
             </button>
           )}
           {error && <div className="text-red-500 text-sm mt-4">{error}</div>}
@@ -107,4 +93,4 @@ const ContractForm = () => {
   );
 };
 
-export default ContractForm;
+export default PanelForm;

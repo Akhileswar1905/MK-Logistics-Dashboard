@@ -29,3 +29,24 @@ export const createContract = async (form) => {
   console.log(res.data);
   return res.data;
 };
+
+export const createPanel = async (form) => {
+  let url = `${base_url}cp/signup`;
+  const res = await axios.post(url, form);
+  console.log(res.data);
+  return res.data;
+};
+
+export const assignContractPanel = async (contract, panels) => {
+  let url = `${base_url}admin/assignContract`;
+  const res = await axios.post(url, { contract: contract, cps: panels });
+  console.log(res.data);
+  return res.data;
+};
+
+export const assignContractDriver = async (contract, drivers) => {
+  let url = `${base_url}cp/contract`;
+  const res = await axios.post(url, { contract: contract, drivers: drivers });
+  console.log(res.data);
+  return res.data;
+};

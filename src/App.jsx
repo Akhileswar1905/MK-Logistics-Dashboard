@@ -14,6 +14,10 @@ import Earnings from "./pages/drivers/subpages/Earnings";
 import BioData from "./pages/drivers/subpages/BioData";
 import NewDriverBioData from "./pages/new-drivers/subpages/NewDriver-BioData";
 import NewContract from "./pages/contracts/New Contract/NewContract";
+import ControlPanel from "./pages/control-panels/page";
+import NewPanel from "./pages/control-panels/New Panel/NewPanel";
+import PanelBioData from "./pages/control-panels/subpages/PanelBioData";
+import PanelDrivers from "./pages/control-panels/subpages/PanelDrivers";
 
 function App() {
   const location = useLocation();
@@ -49,6 +53,15 @@ function App() {
               <Route index element={<Navigate to="bio-data" replace />} />
               <Route path="bio-data" element={<NewDriverBioData />} />
             </Route>
+
+            <Route path="/control-panels" element={<ControlPanel />}></Route>
+            <Route path="/control-panels/new-panel" element={<NewPanel />} />
+            <Route path="/control-panels/:id" element={<PanelBioData />}>
+              <Route index element={<Navigate to="bio-data" replace />} />
+              <Route path="bio-data" element={<BioData />} />
+              <Route path="drivers" element={<PanelDrivers />} />
+            </Route>
+
             <Route
               path="/trip-update/:id"
               element={<UpdateRequestDetailsPage />}

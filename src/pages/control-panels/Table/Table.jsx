@@ -3,26 +3,16 @@ import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
-import { getAllDrivers } from "../../../lib/utils";
+import { FaPlus } from "react-icons/fa6";
 
 const Table = () => {
   const { user } = useContext(UserContext);
-  const [drivers, setDrivers] = useState([]); // Use actual driver data from user context
-  console.log(drivers);
+  const [controlPanels, setControlPanels] = useState([]); // Use actual driver data from user context
+  console.log(controlPanels);
 
   useEffect(() => {
-    const fetchDrivers = async () => {
-      if (!user) return; // If no user, just return or handle loading state
-
-      if (user.isAdmin) {
-        const tempDrivers = await getAllDrivers();
-        setDrivers(tempDrivers);
-      } else {
-        setDrivers(user.drivers); // Use actual driver data from user context
-      }
-    };
-
-    fetchDrivers();
+    if (!user) return; // If no user, just return or handle loading state
+    setControlPanels(user.controlPanels); // Use actual driver data from user context
   }, [user]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,13 +24,13 @@ const Table = () => {
   const rowsPerPage = 10;
 
   // Filter data based on driver name and date range
-  const filteredData = drivers.filter((row) => {
+  const filteredData = controlPanels.filter((row) => {
     const matchesName = row.username
       .toLowerCase()
       .includes(filter.toLowerCase());
     const withinDateRange =
-      (!startDate || row.date >= startDate) &&
-      (!endDate || row.date <= endDate);
+      (!startDate || row.dateOfJoining >= startDate) &&
+      (!endDate || row.dateOfJoining <= endDate);
 
     return matchesName && withinDateRange;
   });
@@ -57,14 +47,14 @@ const Table = () => {
   return (
     <div className="border-2 px-8 py-6 rounded-lg">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-3xl text-[var(--grayish)]">Drivers</h2>
+        <h2 className="text-3xl text-[var(--grayish)]">Control Panels</h2>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <input
               type="text"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              placeholder="Filter by Driver Name..."
+              placeholder="Filter by Panel Name..."
               className="border px-3 py-2 rounded-lg w-56"
             />
           </div>
@@ -75,6 +65,12 @@ const Table = () => {
             <BiFilterAlt size={25} />
             Filter by Date
           </button>
+          <NavLink
+            to={"new-panel"}
+            className="px-4 py-2 rounded-lg bg-primary-green text-white flex items-center gap-4"
+          >
+            Create Panel <FaPlus />
+          </NavLink>
         </div>
       </div>
 
@@ -128,9 +124,8 @@ const Table = () => {
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
-            <th className="py-3 font-normal">Driver Name</th>
-            <th className="py-3 font-normal">Vehicle Number</th>
-            <th className="py-3 font-normal">Number of Trips</th>
+            <th className="py-3 font-normal">Control Panel Name</th>
+            <th className="py-3 font-normal">Number of Drivers</th>
             <th className="py-3 font-normal">Phone Number</th>
             <th className="py-3 font-normal">Date of Joining</th>
           </tr>
@@ -140,13 +135,12 @@ const Table = () => {
             currentRows.map((row, index) => (
               <tr key={index} className="cursor-pointer gap-1">
                 <NavLink
-                  to={`/drivers/${row.phoneNumber}/bio-data`}
-                  state={{ driver: row }}
+                  to={`/control-panels/${row.phoneNumber}/bio-data`}
+                  state={{ cp: row }}
                 >
                   <td className="py-4">{row.username}</td>
                 </NavLink>
-                <td className="py-4">{row.vehicleNumber}</td>
-                <td className="py-4">{row.tripDetails.length}</td>
+                <td className="py-4">{row.drivers.length}</td>
                 <td className="py-4">{row.phoneNumber}</td>
                 <td className="py-4">{row.dateOfJoining}</td>
               </tr>
