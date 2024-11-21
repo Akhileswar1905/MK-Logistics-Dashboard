@@ -4,7 +4,9 @@ import { UserContext } from "../../../../context/UserContext";
 
 const ContractTable = () => {
   const { user } = useContext(UserContext);
-  const [companies, setCompanies] = useState(user?.contracts || []);
+  const [companies, setCompanies] = useState(
+    user.isAdmin ? user[0]?.contracts : user?.contracts
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 3;
@@ -31,14 +33,20 @@ const ContractTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currentRows.map((row, index) => (
-            <tr key={index}>
-              <td className="py-3 flex gap-4 items-center">
-                <div className="w-[25px] h-[25px] rounded-full bg-[#ddd]"></div>
-                {row.companyName}
-              </td>
+          {currentRows.length > 0 ? (
+            currentRows.map((row, index) => (
+              <tr key={index}>
+                <td className="py-3 flex gap-4 items-center">
+                  <div className="w-[25px] h-[25px] rounded-full bg-[#ddd]"></div>
+                  {row.companyName}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td className="py-3">No contracts found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 

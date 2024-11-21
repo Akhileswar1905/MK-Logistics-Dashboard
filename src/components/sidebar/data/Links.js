@@ -33,6 +33,15 @@ export const links = [
     showForAdmin: true, // Only show for admin
   },
   {
+    name: "Control Panels",
+    path: "/control-panels",
+    icon: MdDirectionsCarFilled,
+    requests: 0,
+    component: Drivers,
+    detailsPath: "/control-panels/:id",
+    onlyAdmin: true,
+  },
+  {
     name: "Contracts",
     path: "/contracts",
     icon: FaFileContract,

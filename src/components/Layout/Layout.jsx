@@ -21,7 +21,7 @@ const Layout = ({ children }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-[var(--primary-green)] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -33,7 +33,7 @@ const Layout = ({ children }) => {
         <Sidebar />
         <div className="flex-1">
           <Header />
-          {/* {children} */}
+          {children}
         </div>
       </div>
     );

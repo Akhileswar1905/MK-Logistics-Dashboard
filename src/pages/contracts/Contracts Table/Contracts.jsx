@@ -10,8 +10,9 @@ const ContractTable = () => {
   const rowsPerPage = 10;
   const { user } = useContext(UserContext);
   useEffect(() => {
-    setCompanies(user?.contracts); // Use actual driver data from user context
-    console.log(companies); // Log for debugging purposes. Remove in production.
+    if (user?.isAdmin) {
+      setCompanies(user[0]?.contracts);
+    } else setCompanies(user?.contracts); // Use actual driver data from user context
     // Update the current page when the user contracts change.
     setCurrentPage(1); // Reset the current page to 1 when the user contracts change.
   }, [user]);
@@ -43,6 +44,16 @@ const ContractTable = () => {
             placeholder="Filter by Company Name"
             className="border px-3 py-2 rounded-lg"
           />
+
+          {/* Add New Contract Button */}
+          {user?.isAdmin && (
+            <NavLink
+              to={"new-contract"}
+              className="bg-[var(--primary-green)] text-white px-4 py-2 rounded-lg"
+            >
+              Add New Contract
+            </NavLink>
+          )}
         </div>
       </div>
       <table className="border-collapse w-full text-left my-5">
@@ -57,7 +68,7 @@ const ContractTable = () => {
           {currentRows?.map((row, index) => (
             <tr key={index} className="cursor-pointer">
               <NavLink
-                to={`/contracts/${row.companyId}`}
+                to={`/contracts/${row.contractId}`}
                 state={{ contract: row }}
               >
                 <td className="py-4 flex items-center gap-3">
@@ -66,7 +77,7 @@ const ContractTable = () => {
                 </td>
               </NavLink>
               <td className="py-4">{row.contactNumber}</td>
-              <td className="py-4">{row.createAt}</td>
+              <td className="py-4">{row.createdAt}</td>
             </tr>
           ))}
         </tbody>

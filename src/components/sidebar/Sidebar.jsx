@@ -12,9 +12,13 @@ const Sidebar = () => {
   // Filter links based on isAdmin
   const filteredLinks = links.filter((link) => {
     if (isAdmin) {
+      if (link.onlyAdmin) {
+        return link.onlyAdmin === true;
+      }
       return link.showForAdmin === true;
     }
-    return true;
+
+    return link.name !== "Control Panels";
   });
 
   return (
