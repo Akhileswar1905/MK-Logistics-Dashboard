@@ -21,11 +21,10 @@ const ContractForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
     const res = await createContract(form);
     if (res) {
       setMessage("Contract created successfully! ");
-      router("/contracts");
+      // router("/contracts");
     } else {
       setError("Failed to create contract!");
     }

@@ -50,3 +50,31 @@ export const assignContractDriver = async (contract, drivers) => {
   console.log(res.data);
   return res.data;
 };
+
+export const generateReport = async (id) => {
+  let url = `${base_url}cp/generate-report/${id}`;
+  const res = await axios.post(url);
+  console.log(res.data);
+  return res.data;
+};
+
+export const sendPayRequest = async (report) => {
+  let url = `${base_url}cp/payreq`;
+  const res = await axios.post(url, report);
+  console.log(res.data);
+  return res.data;
+};
+
+export const sendApprovalRequest = async (reportId) => {
+  const url = `${base_url}admin/acceptReq/${reportId}`;
+  const res = await axios.post(url);
+  console.log(res.data);
+  return res.data;
+};
+
+export const sendRejectionRequest = async (reportId) => {
+  let url = `${base_url}admin/rejectReq/${reportId}`;
+  const res = await axios.post(url);
+  console.log(res.data);
+  return res.data;
+};

@@ -76,7 +76,7 @@ export const links = [
     requests: 0,
     component: Reports,
     detailsPath: "/transaction-reports/:id",
-    showForAdmin: false, // Show for all
+    showForAdmin: true, // Show for all
   },
 ];
 

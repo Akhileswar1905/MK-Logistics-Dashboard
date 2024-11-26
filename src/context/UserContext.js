@@ -45,7 +45,7 @@ export const UserProvider = ({ children }) => {
     if (!user && userId) {
       fetchUser();
     }
-  }, []); // Dependency array doesn't include `user`.
+  }, [user]);
 
   return (
     <UserContext.Provider

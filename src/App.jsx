@@ -18,6 +18,7 @@ import ControlPanel from "./pages/control-panels/page";
 import NewPanel from "./pages/control-panels/New Panel/NewPanel";
 import PanelBioData from "./pages/control-panels/subpages/PanelBioData";
 import PanelDrivers from "./pages/control-panels/subpages/PanelDrivers";
+import DriverContracts from "./pages/drivers/subpages/Contracts";
 
 function App() {
   const location = useLocation();
@@ -45,6 +46,7 @@ function App() {
               <Route index element={<Navigate to="bio-data" replace />} />
               <Route path="bio-data" element={<BioData />} />
               <Route path="trips" element={<Trips />} />
+              <Route path="contracts" element={<DriverContracts />} />
               <Route path="earnings" element={<Earnings />} />
             </Route>
             <Route path="/contracts/:id" element={<ContractDetailsPage />} />

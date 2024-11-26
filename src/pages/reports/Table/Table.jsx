@@ -1,17 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
+import { FaPlus } from "react-icons/fa6";
+import { UserContext } from "../../../context/UserContext";
+import { generateReport } from "../../../lib/utils";
+import { NavLink } from "react-router-dom";
 
 const Table = () => {
-  const data = Array.from({ length: 100 }, (_, i) => ({
-    transactionId: `Transaction ${i + 1}`,
-    vehicleNumber: `Vehicle ${i + 1}`,
-    phoneNumber: `${Math.floor(Math.random() * 10000000000)}`,
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // Store date as Date object
-    amount: (Math.random() * 1000).toFixed(2), // Random amount for the transaction
-    status: ["Approved", "Rejected", "Pending"][Math.floor(Math.random() * 3)], // Random status
-  }));
-
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState(""); // Status filter
@@ -19,11 +14,20 @@ const Table = () => {
   const [endDate, setEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
 
+  const { user } = useContext(UserContext);
+  const [reports, setReports] = useState([]);
+
   const rowsPerPage = 10;
 
+  useEffect(() => {
+    if (user?.reports) {
+      setReports(user.reports);
+    }
+  }, [user]);
+
   // Filter data
-  const filteredData = data.filter((row) => {
-    const matchesName = row.transactionId
+  const filteredData = reports.filter((row) => {
+    const matchesName = row.reportId
       .toLowerCase()
       .includes(filter.toLowerCase());
     const matchesStatus = statusFilter ? row.status === statusFilter : true; // Filter by status if selected
@@ -49,7 +53,7 @@ const Table = () => {
 
   const statusColor = (status) => {
     switch (status) {
-      case "Approved":
+      case "Done":
         return "bg-green-500"; // Green for Approved
       case "Rejected":
         return "bg-red-500"; // Red for Rejected
@@ -58,6 +62,16 @@ const Table = () => {
       default:
         return "";
     }
+  };
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    // Call the API to generate the report
+    const res = await generateReport(user._id);
+    console.log(res);
+    // Set the reports by adding the response report to the reports and render it on the page
+    setReports([...reports, res]);
+    console.log("Clicked");
   };
 
   return (
@@ -72,7 +86,7 @@ const Table = () => {
               className="border px-3 py-2 rounded-lg w-56"
             >
               <option value="">Filter by Status</option>
-              <option value="Approved">Approved</option>
+              <option value="Done">Approved</option>
               <option value="Rejected">Rejected</option>
               <option value="Pending">Pending</option>
             </select>
@@ -83,6 +97,13 @@ const Table = () => {
           >
             <BiFilterAlt size={25} />
             Filter by Date
+          </button>
+          <button
+            className="bg-primary-green px-4 py-2 rounded-lg text-white flex items-center gap-2"
+            onClick={handleClick}
+          >
+            Generate report
+            <FaPlus />
           </button>
         </div>
       </div>
@@ -138,7 +159,6 @@ const Table = () => {
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
             <th className="py-3 font-normal">Transaction Id</th>
-            <th className="py-3 font-normal">Amount</th>
             <th className="py-3 font-normal">Date of Creation</th>
             <th className="py-3 font-normal">Status</th>
           </tr>
@@ -147,9 +167,16 @@ const Table = () => {
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
               <tr key={index} className="cursor-pointer gap-1">
-                <td className="py-4">{row.transactionId}</td>
-                <td className="py-4">${row.amount}</td>
-                <td className="py-4">{row.date.toISOString().split("T")[0]}</td>
+                <NavLink
+                  to={`/transaction-reports/${row.reportId}`}
+                  state={{ report: row }}
+                >
+                  <td className="py-4">{row.reportId}</td>
+                </NavLink>
+
+                <td className="py-4">
+                  {new Date(row.reportDate).toISOString().split("T")[0]}
+                </td>
                 <td className="py-4 flex items-center gap-2">
                   <span
                     className={`w-2.5 h-2.5 rounded-full ${statusColor(

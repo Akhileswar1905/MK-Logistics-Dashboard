@@ -44,6 +44,25 @@ const Driver = () => {
           >
             Trips
           </NavLink>
+
+          <NavLink
+            to={"contracts"}
+            className={({ isActive }) =>
+              `
+              py-2 px-3 rounded-md ${
+                isActive
+                  ? "bg-[var(--primary-green)] text-white"
+                  : "border-2 text-black"
+              }
+            `
+            }
+            state={{
+              driver: driver,
+            }}
+          >
+            Contracts
+          </NavLink>
+
           <NavLink
             to={"earnings"}
             className={({ isActive }) =>

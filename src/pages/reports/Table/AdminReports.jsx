@@ -1,39 +1,39 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
-import { UserContext } from "../../../../context/UserContext";
+import { UserContext } from "../../../context/UserContext";
+import { NavLink } from "react-router-dom";
 
-const TripsTable = ({ driver }) => {
-  const trips = driver.tripDetails || []; // Ensure tripDetails exists
+const AdminReports = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // Status filter
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
+  const { user } = useContext(UserContext);
+  const [reports, setReports] = useState([]);
 
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
 
-  // Utility function to convert DD/MM/YYYY to YYYY-MM-DD
-  const normalizeDate = (date) => {
-    const [day, month, year] = date.split("-");
-    return `${year}-${month}-${day}`;
-  };
+  useEffect(() => {
+    if (user?.payReqs) {
+      setReports(user.payReqs);
+      console.log("Pay reqs", user.payReqs);
+    }
+  }, [user, user?.payReqs]);
 
-  const filteredData = trips.filter((row) => {
-    const matchesName = row.tripID.toLowerCase().includes(filter.toLowerCase());
-    const matchesPaymentStatus =
-      !paymentStatusFilter || row.tripPayment === paymentStatusFilter;
-
-    // Normalize the trip date
-    const normalizedTripDate = normalizeDate(row.tripDate);
-    console.log(startDate, endDate);
-    console.log(normalizedTripDate);
+  // Filter data
+  const filteredData = reports.filter((row) => {
+    const matchesName = row.reportId
+      .toLowerCase()
+      .includes(filter.toLowerCase());
+    const matchesStatus = statusFilter ? row.status === statusFilter : true;
     const withinDateRange =
-      (!startDate || normalizedTripDate >= startDate) &&
-      (!endDate || normalizedTripDate <= endDate);
+      (!startDate || new Date(row.date) >= new Date(startDate)) &&
+      (!endDate || new Date(row.date) <= new Date(endDate));
 
-    return matchesName && matchesPaymentStatus && withinDateRange;
+    return matchesName && matchesStatus && withinDateRange;
   });
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -45,43 +45,40 @@ const TripsTable = ({ driver }) => {
     setCurrentPage(newPage);
   };
 
-  const statusColors = {
-    pending: "bg-yellow-300",
-    Done: "bg-green-500",
-    "On Hold": "bg-red-500",
+  const handleApplyFilter = () => {
+    setIsDateFilterOpen(false);
   };
 
-  const { user } = useContext(UserContext);
-
-  const getContract = (contractId) => {
-    const con = user?.contracts.findIndex(
-      (contract) => contract.contractId === contractId
-    );
-    return user?.contracts[con] ? user.contracts[con].companyName : "";
+  const statusColor = (status) => {
+    switch (status) {
+      case "Done":
+        return "bg-green-500"; // Green for Approved
+      case "Rejected":
+        return "bg-red-500"; // Red for Rejected
+      case "Pending":
+        return "bg-yellow-500"; // Yellow for Pending
+      default:
+        return "";
+    }
   };
 
   return (
     <div className="border-2 px-8 py-6 rounded-lg">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-3xl text-[var(--grayish)]">Trips</h2>
+        <h2 className="text-3xl text-[var(--grayish)]">Transaction Reports</h2>
         <div className="flex gap-4">
-          <input
-            type="text"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="Filter by Trip Id..."
-            className="border px-3 py-2 rounded-lg w-56"
-          />
-          <select
-            value={paymentStatusFilter}
-            onChange={(e) => setPaymentStatusFilter(e.target.value)}
-            className="border px-3 py-2 rounded-lg w-56"
-          >
-            <option value="">All Payment Status</option>
-            <option value="pending">Pending</option>
-            <option value="Done">Completed</option>
-            <option value="On Hold">On Hold</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border px-3 py-2 rounded-lg w-56"
+            >
+              <option value="">Filter by Status</option>
+              <option value="Done">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
           <button
             onClick={() => setIsDateFilterOpen(true)}
             className="text-[var(--grayish)] cursor-pointer flex items-center gap-1"
@@ -92,31 +89,34 @@ const TripsTable = ({ driver }) => {
         </div>
       </div>
 
+      {/* Date Range Filter Dialog */}
       {isDateFilterOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-10 rounded-lg shadow-lg relative flex flex-col gap-5">
-            <h3 className="text-xl font-semibold mb-4 text-[var(--grayish)]">
+            <h3 className="text-xl font-semibold mb-4 text-[var(--grayish)] ">
               Filter by Date Range
             </h3>
-            <div className="flex flex-col gap-4">
-              <label>
-                Start Date
+            <div className="flex gap-4 flex-col">
+              <div>
+                <label className="block text-[var(--grayish)]">
+                  Start Date
+                </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="border px-3 py-2 rounded-lg w-full"
+                  className="border px-3 py-2 rounded-lg w-full text-[var(--grayish)]"
                 />
-              </label>
-              <label>
-                End Date
+              </div>
+              <div>
+                <label className="block text-[var(--grayish)]">End Date</label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="border px-3 py-2 rounded-lg w-full"
+                  className="border px-3 py-2 rounded-lg w-full text-[var(--grayish)]"
                 />
-              </label>
+              </div>
             </div>
             <div className="flex justify-end gap-4 mt-6">
               <button
@@ -126,7 +126,7 @@ const TripsTable = ({ driver }) => {
                 Cancel
               </button>
               <button
-                onClick={() => setIsDateFilterOpen(false)}
+                onClick={handleApplyFilter}
                 className="px-4 py-2 rounded-lg bg-[var(--primary-green)] text-white"
               >
                 Apply Filter
@@ -139,32 +139,42 @@ const TripsTable = ({ driver }) => {
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
-            <th className="py-3 font-normal">Trip id</th>
-            <th className="py-3 font-normal">Contract</th>
-            <th className="py-3 font-normal">Date</th>
-            <th className="py-3 font-normal">Payment Status</th>
+            <th className="py-3 font-normal">Transaction Id</th>
+            <th className="py-3 font-normal">Control Panel</th>
+
+            <th className="py-3 font-normal">Date of Creation</th>
+            <th className="py-3 font-normal">Status</th>
           </tr>
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
-              <tr className="cursor-pointer" key={index}>
-                <td className="py-4">{row.tripID}</td>
-                <td className="py-4">{getContract(row.contract)}</td>
-                <td className="py-4">{row.tripDate}</td>
-                <td className="py-4 flex items-center gap-2 capitalize">
+              <tr key={index} className="cursor-pointer gap-1">
+                <NavLink
+                  to={`/transaction-reports/${row.reportId}`}
+                  state={{ report: row }}
+                >
+                  <td className="py-4">{row.reportId}</td>
+                </NavLink>
+
+                <td className="py-4">{row.cpName}</td>
+
+                <td className="py-4">
+                  {new Date(row.reportDate).toISOString().split("T")[0]}
+                </td>
+                <td className="py-4 flex items-center gap-2">
                   <span
-                    className={`w-3 h-3 rounded-full ${
-                      statusColors[row.tripPayment]
-                    }`}
+                    className={`w-2.5 h-2.5 rounded-full ${statusColor(
+                      row.status
+                    )}`}
                   ></span>
-                  {row.tripPayment}
+                  {row.status}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="text-center py-4">
+              <td colSpan="5" className="text-center py-4">
                 No records found
               </td>
             </tr>
@@ -172,6 +182,7 @@ const TripsTable = ({ driver }) => {
         </tbody>
       </table>
 
+      {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-4 items-center">
           <button
@@ -205,4 +216,4 @@ const TripsTable = ({ driver }) => {
   );
 };
 
-export default TripsTable;
+export default AdminReports;

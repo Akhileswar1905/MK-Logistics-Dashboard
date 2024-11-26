@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
+import { UserContext } from "../../../context/UserContext";
+import { NavLink } from "react-router-dom";
 
 const Table = () => {
-  const data = Array.from({ length: 100 }, (_, i) => ({
-    driverName: `Driver ${i + 1}`,
-    vehicleNumber: `Vehicle ${i + 1}`,
-    phoneNumber: `${Math.floor(Math.random() * 10000000000)}`,
-    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-  }));
+  const { user } = useContext(UserContext);
+  const [requests, setRequests] = useState([]);
+  const [drivers, setDrivers] = useState([]);
+  useEffect(() => {
+    setRequests(user.updates || []); // Ensure `user.updates` is defined
+    setDrivers(user.drivers || []); // Ensure `user.drivers
+  }, [user]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
@@ -18,12 +19,16 @@ const Table = () => {
   const [endDate, setEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
 
+  const getDriver = (phoneNumber) => {
+    const driver = drivers.find((driver) => driver.phoneNumber === phoneNumber);
+    return driver ? driver.username : "Unknown Driver";
+  };
   const rowsPerPage = 10;
 
   // Filter data
-  const filteredData = data.filter((row) => {
-    const matchesName = row.driverName
-      .toLowerCase()
+  const filteredData = requests.filter((row) => {
+    const matchesName = getDriver(row.phoneNumber)
+      ?.toLowerCase()
       .includes(filter.toLowerCase());
     const withinDateRange =
       (!startDate || row.date >= startDate) &&
@@ -115,28 +120,30 @@ const Table = () => {
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
-            <th className="py-3 font-normal ">Driver Name</th>
-            <th className="py-3 font-normal">Vehicle Number</th>
+            <th className="py-3 font-normal">Driver Name</th>
             <th className="py-3 font-normal">Phone Number</th>
+            <th className="py-3 font-normal">Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
               <tr key={index} className="cursor-pointer  gap-1">
-                <td className="py-2 ">{row.driverName}</td>
-                <td className="py-2">{row.vehicleNumber}</td>
+                <td className="py-2">{getDriver(row.phoneNumber)}</td>
                 <td className="py-2">{row.phoneNumber}</td>
                 <td className="py-2 flex gap-6">
-                  <button className="text-[var(--primary-green)] border-2 p-2 rounded-md">
+                  <NavLink
+                    to={`/trip-update/${row.phoneNumber}`}
+                    className="text-[var(--primary-green)] border-2 p-2 rounded-md"
+                  >
                     View Request
-                  </button>
+                  </NavLink>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="text-center py-4">
+              <td colSpan="4" className="text-center py-4">
                 No records found
               </td>
             </tr>

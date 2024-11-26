@@ -8,13 +8,13 @@ const ContractTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState(""); // New state for the filter
   const rowsPerPage = 10;
-  const { user, loading } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   // Effect to load contracts based on user data
   useEffect(() => {
     setCompanies(user?.contracts || []); // For non-admin users
     setCurrentPage(1); // Reset the current page when the user changes
-  }, [user, loading]);
+  }, [user, user?.contracts]);
 
   // Format date utility
   const formatDate = (dateStr) => {
@@ -40,11 +40,6 @@ const ContractTable = () => {
     if (newPage < 1 || newPage > totalPages) return;
     setCurrentPage(newPage);
   };
-
-  // Handle loading or empty user context
-  if (loading || !user) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <div className="w-full border-2 px-8 py-6 rounded-lg">
