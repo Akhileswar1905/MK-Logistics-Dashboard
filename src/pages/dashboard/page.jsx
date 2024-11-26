@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import Card from "./components/Card/Card";
 import Table from "./components/Table/Table";
 import ContractTable from "./components/Contracts Table/Contracts";
-import { UserContext } from "../../context/UserContext";
 import { getAllDrivers } from "../../lib/utils";
+import AdminReports from "./components/Table/AdminReports";
+import { UserContext } from "../../context/UserContext";
 
 const Dashboard = () => {
   const { user } = useContext(UserContext); // Get user context
@@ -195,7 +196,7 @@ const Dashboard = () => {
         />
       </div>
       <div className="flex gap-2">
-        {!isAdmin && <Table />}
+        {!isAdmin ? <Table /> : <AdminReports />}
         {user && (
           <div className="flex flex-col gap-2 w-[33%]">
             <ContractTable />

@@ -78,3 +78,10 @@ export const sendRejectionRequest = async (reportId) => {
   console.log(res.data);
   return res.data;
 };
+
+export const sendApprovalResponse = async (trip) => {
+  let url = `${base_url}cp/accept-update-request`;
+  const res = await axios.post(url, trip);
+  console.log(res.data);
+  return res.data;
+};

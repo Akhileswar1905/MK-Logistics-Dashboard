@@ -1,42 +1,39 @@
 import React, { useContext, useEffect, useState } from "react";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFilterAlt } from "react-icons/bi";
-import { UserContext } from "../../../context/UserContext";
 import { NavLink } from "react-router-dom";
-import { sendApprovalResponse } from "../../../lib/utils";
-import { FaRegCheckCircle } from "react-icons/fa";
+import { UserContext } from "../../../../context/UserContext";
 
-const Table = () => {
-  const { user } = useContext(UserContext);
-  const [requests, setRequests] = useState([]);
-  const [drivers, setDrivers] = useState([]);
-  useEffect(() => {
-    setRequests(user.updates || []); // Ensure `user.updates` is defined
-    setDrivers(user.drivers || []); // Ensure `user.drivers
-  }, [user]);
-
+const AdminReports = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // Status filter
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
+  const { user } = useContext(UserContext);
+  const [reports, setReports] = useState([]);
 
-  const getDriver = (phoneNumber) => {
-    const driver = drivers.find((driver) => driver.phoneNumber === phoneNumber);
-    return driver ? driver : "Unknown Driver";
-  };
   const rowsPerPage = 10;
 
-  // Filter data
-  const filteredData = requests.filter((row) => {
-    const matchesName = getDriver(row.phoneNumber)
-      .username?.toLowerCase()
-      .includes(filter.toLowerCase());
-    const withinDateRange =
-      (!startDate || row.date >= startDate) &&
-      (!endDate || row.date <= endDate);
+  useEffect(() => {
+    if (user?.payReqs) {
+      setReports(user.payReqs);
+      console.log("Pay reqs", user.payReqs);
+    }
+  }, [user, user?.payReqs]);
 
-    return matchesName && withinDateRange;
+  // Filter data
+  const filteredData = reports.filter((row) => {
+    const matchesName = row.reportId
+      .toLowerCase()
+      .includes(filter.toLowerCase());
+    const matchesStatus = statusFilter ? row.status === statusFilter : true;
+    const withinDateRange =
+      (!startDate || new Date(row.date) >= new Date(startDate)) &&
+      (!endDate || new Date(row.date) <= new Date(endDate));
+
+    return matchesName && matchesStatus && withinDateRange;
   });
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -48,26 +45,39 @@ const Table = () => {
     setCurrentPage(newPage);
   };
 
-  const handleAccept = async (e, data) => {
-    const res = await sendApprovalResponse(data);
-    if (res) {
-      setRequests(res);
+  const handleApplyFilter = () => {
+    setIsDateFilterOpen(false);
+  };
+
+  const statusColor = (status) => {
+    switch (status) {
+      case "Done":
+        return "bg-green-500"; // Green for Approved
+      case "Rejected":
+        return "bg-red-500"; // Red for Rejected
+      case "Pending":
+        return "bg-yellow-500"; // Yellow for Pending
+      default:
+        return "";
     }
   };
 
   return (
-    <div className=" border-2 px-8 py-6 rounded-lg">
+    <div className="w-[66%] border-2 px-8 py-6 rounded-lg">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-3xl text-[var(--grayish)]">Update Requests</h2>
+        <h2 className="text-3xl text-[var(--grayish)]">Transaction Reports</h2>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              placeholder="Filter by Driver Name..."
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
               className="border px-3 py-2 rounded-lg w-56"
-            />
+            >
+              <option value="">Filter by Status</option>
+              <option value="Done">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Pending">Pending</option>
+            </select>
           </div>
           <button
             onClick={() => setIsDateFilterOpen(true)}
@@ -116,7 +126,7 @@ const Table = () => {
                 Cancel
               </button>
               <button
-                onClick={() => setIsDateFilterOpen(false)}
+                onClick={handleApplyFilter}
                 className="px-4 py-2 rounded-lg bg-[var(--primary-green)] text-white"
               >
                 Apply Filter
@@ -129,47 +139,42 @@ const Table = () => {
       <table className="border-collapse w-full text-left my-5">
         <thead className="text-[var(--grayish)]">
           <tr className="font-light">
-            <th className="py-3 font-normal">Driver Name</th>
-            <th className="py-3 font-normal">Phone Number</th>
+            <th className="py-3 font-normal">Transaction Id</th>
+            <th className="py-3 font-normal">Control Panel</th>
+
+            <th className="py-3 font-normal">Date of Creation</th>
             <th className="py-3 font-normal">Status</th>
-            <th className="py-3 font-normal">Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row, index) => (
-              <tr key={index} className="cursor-pointer  gap-1">
-                <td className="py-2">{getDriver(row.phoneNumber).username}</td>
-                <td className="py-2">{row.phoneNumber}</td>
-                <td className="py-2  capitalize">{row.trip.status}</td>
-                <td className="py-2 flex gap-6">
-                  {row.trip.status === "not-allowed" ? (
-                    <button
-                      className="text-[green] border-2 p-2 rounded-md"
-                      onClick={(e) => handleAccept(e, row)}
-                    >
-                      Accept
-                    </button>
-                  ) : (
-                    <p>
-                      <span className="text-primary-green capitalize flex items-center gap-2">
-                        <FaRegCheckCircle />
-                        Allowed
-                      </span>
-                    </p>
-                  )}
-                  {/* <button
-                    className="text-[red] border-2 p-2 rounded-md"
-                    // onClick = {() => handleDecline(e, row._id)}
-                  >
-                    Decline
-                  </button> */}
+              <tr key={index} className="cursor-pointer gap-1">
+                <NavLink
+                  to={`/transaction-reports/${row.reportId}`}
+                  state={{ report: row }}
+                >
+                  <td className="py-4">{row.reportId}</td>
+                </NavLink>
+
+                <td className="py-4">{row.cpName}</td>
+
+                <td className="py-4">
+                  {new Date(row.reportDate).toISOString().split("T")[0]}
+                </td>
+                <td className="py-4 flex items-center gap-2">
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full ${statusColor(
+                      row.status
+                    )}`}
+                  ></span>
+                  {row.status}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="text-center py-4">
+              <td colSpan="5" className="text-center py-4">
                 No records found
               </td>
             </tr>
@@ -211,4 +216,4 @@ const Table = () => {
   );
 };
 
-export default Table;
+export default AdminReports;

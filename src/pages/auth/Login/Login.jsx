@@ -8,6 +8,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const login = useLogin();
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -28,10 +29,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const res = await login(form);
+
     if (res.status !== 200) {
       setError(res.data || "An error occurred");
     }
+    setLoading(false);
   };
 
   return (
@@ -78,14 +82,26 @@ const Login = () => {
           </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <div>
-            <input
-              type="submit"
-              value="Submit"
-              className="w-full py-2 mt-4 bg-[var(--primary-green)] text-white font-semibold rounded-lg cursor-pointer"
-            />
+            {loading ? (
+              <Loading />
+            ) : (
+              <input
+                type="submit"
+                value="Submit"
+                className="w-full py-2 mt-4 bg-[var(--primary-green)] text-white font-semibold rounded-lg cursor-pointer"
+              />
+            )}
           </div>
         </form>
       </div>
+    </div>
+  );
+};
+
+const Loading = () => {
+  return (
+    <div className="flex items-center justify-center">
+      <div class="loader"></div>
     </div>
   );
 };
